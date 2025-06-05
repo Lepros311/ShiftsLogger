@@ -18,23 +18,56 @@ namespace ShiftsLogger.Controllers
 
         // GET: api/Shifts
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Shift>>> GetShifts()
+        public async Task<ActionResult<IEnumerable<ShiftDto>>> GetShifts()
         {
-            return await _context.Shifts.ToListAsync();
+            //return await _context.Shifts.Include(s => s.Worker).ToListAsync();
+            try
+            {
+                var shifts = await _context.Shifts
+                    .Include(s => s.Worker)
+                    .Select(s => new ShiftDto
+                    {
+                        ShiftId = s.ShiftId,
+                        ShiftName = s.ShiftName,
+                        StartTime = s.StartTime,
+                        EndTime = s.EndTime,
+                        Duration = s.Duration,
+                        WorkerName = s.Worker.FirstName + " " + s.Worker.LastName
+                    })
+                    .ToListAsync();
+
+                return Ok(shifts);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal Server Error: {ex.Message}");
+            }
         }
 
         // GET: api/Shifts/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Shift>> GetShift(int id)
         {
-            var shift = await _context.Shifts.FindAsync(id);
+            var shift = await _context.Shifts
+                .Include(s => s.Worker)
+                .Where(s => s.ShiftId == id)
+                .Select(s => new ShiftDto
+                {
+                    ShiftId = s.ShiftId,
+                    ShiftName = s.ShiftName,
+                    StartTime = s.StartTime,
+                    EndTime = s.EndTime,
+                    Duration = s.Duration,
+                    WorkerName = s.Worker.FirstName + " " + s.Worker.LastName
+                })
+                .FirstOrDefaultAsync();
 
             if (shift == null)
             {
                 return NotFound();
             }
 
-            return shift;
+            return Ok(shift);
         }
 
         // PUT: api/Shifts/5

@@ -3,8 +3,6 @@
 ##
 ## Get latest from `dotnet new gitignore`
 
-.gitignore
-
 # dotenv files
 .env
 
@@ -484,3 +482,18 @@ $RECYCLE.BIN/
 
 # Vim temporary swap files
 *.swp
+
+# Ignore build artifacts
+bin/
+obj/
+
+# Ignore user config files
+.vs/
+*.suo
+*.user
+
+# Ignore NuGet packages
+packages/
+
+# Ignore Git metadata itself
+.gitignore

@@ -1,0 +1,25 @@
+{
+  "profiles": {
+    "http": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "dotnetRunMessages": true,
+      "applicationUrl": "http://localhost:5140"
+    },
+    "https": {
+      "commandName": "Project",
+      "workingDirectory": "C:\\Users\\Andrew\\Documents\\coding stuff\\C#\\The C# Academy\\ShiftsLogger\\",
+        "launchBrowser": true,
+      "launchUrl": "swagger",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "dotnetRunMessages": true,
+      "applicationUrl": "https://localhost:7150;http://localhost:5140"
+    }
+  },
+  "$schema": "https://json.schemastore.org/launchsettings.json"
+}

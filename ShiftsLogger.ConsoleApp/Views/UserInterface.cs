@@ -2,7 +2,7 @@
 using ShiftsLogger.ConsoleApp.Models;
 using ShiftsLogger.ConsoleApp.Services;
 using System.Text.Json;
-using System.Net.Http.Json;
+using ShiftsLogger.API.Controllers;
 
 namespace ShiftsLogger.App.Views;
 
@@ -31,7 +31,7 @@ public class UserInterface
                 .PageSize(10)
                 .AddChoices(options));
 
-            var userInterface = new UserInterface(new ShiftService(new HttpClient()), new WorkerService(new HttpClient()));
+            var userInterface = new UserInterface(new ShiftService(), new WorkerService(new HttpClient()));
 
             switch (mainMenuChoice)
             {
@@ -113,18 +113,15 @@ public class UserInterface
             switch (shiftsMenuChoice)
             {
                 case "View Shifts":
-                    var httpClient = new HttpClient();
-                    httpClient.BaseAddress = new Uri("https://localhost:7150");
-                    var response = await httpClient.GetAsync("/api/Shifts");
-                    //var shifts = JsonSerializer.Deserialize<List<ShiftDto>>(response);
-                    var shifts = await response.Content.ReadFromJsonAsync<List<ShiftDto>>();
+                    var shifts = await _shiftService.GetShiftsAsync();
                     Display.PrintShiftsTable(shifts, "View Shifts");
                     ReturnToPreviousMenu();
                     break;
-                //case "Add Shift":
-                //    _shiftService.CreateShift();
-                //    ReturnToPreviousMenu();
-                //    break;
+                case "Add Shift":
+                    
+                    await _shiftService.CreateShiftAsync(newShift);
+                    ReturnToPreviousMenu();
+                    break;
                 //case "Edit Shift":
                 //    _shiftService.UpdateShift();
                 //    ReturnToPreviousMenu();

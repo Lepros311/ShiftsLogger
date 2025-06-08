@@ -1,20 +1,30 @@
 ﻿using ShiftsLogger.ConsoleApp.Models;
-using System.Text.Json;
+using System.Net.Http.Json;
 
 namespace ShiftsLogger.ConsoleApp.Services;
 
 public class ShiftService
 {
-    private readonly HttpClient _httpClient;
+    //private readonly HttpClient _httpClient;
 
-    public ShiftService(HttpClient httpClient)
-    {
-        _httpClient = httpClient;
-    }
+    //public ShiftService(HttpClient httpClient)
+    //{
+    //    _httpClient = httpClient;
+    //}
 
     public async Task<List<ShiftDto>> GetShiftsAsync()
     {
-        var response = await _httpClient.GetStringAsync("/api/Shifts");
-        return JsonSerializer.Deserialize<List<ShiftDto>>(response);
+        var httpClient = new HttpClient();
+        httpClient.BaseAddress = new Uri("https://localhost:7150");
+        var response = await httpClient.GetAsync("/api/Shifts");
+        var shifts = await response.Content.ReadFromJsonAsync<List<ShiftDto>>();
+        return shifts;
+    }
+
+    public async Task<bool> CreateShiftAsync(ShiftDto newShift)
+    {
+        var httpClient = new HttpClient();
+        httpClient.BaseAddress = new Uri("https://localhost:7150");
+        var response = await httpClient.PostAsJsonAsync("/api/Shifts", newShift);
     }
 }

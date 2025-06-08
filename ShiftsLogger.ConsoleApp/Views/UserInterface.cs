@@ -31,7 +31,7 @@ public class UserInterface
                 .PageSize(10)
                 .AddChoices(options));
 
-            var userInterface = new UserInterface(new ShiftService(), new WorkerService(new HttpClient()));
+            var userInterface = new UserInterface(new ShiftService(new HttpClient()), new WorkerService(new HttpClient()));
 
             switch (mainMenuChoice)
             {
@@ -113,13 +113,12 @@ public class UserInterface
             switch (shiftsMenuChoice)
             {
                 case "View Shifts":
-                    var httpClient = new HttpClient();
                     var shifts = await _shiftService.GetShiftsAsync();
                     Display.PrintShiftsTable(shifts, "View Shifts");
                     ReturnToPreviousMenu();
                     break;
                 case "Add Shift":
-                    ShiftDto shift = PromptForNewShift();
+                    ShiftDto shift = await PromptForNewShift();
                     await _shiftService.CreateShiftAsync(shift);
                     ReturnToPreviousMenu();
                     break;
@@ -144,8 +143,12 @@ public class UserInterface
         Console.ReadKey();
     }
 
-    public static ShiftDto PromptForNewShift()
+    public async Task<ShiftDto> PromptForNewShift()
     {
+        Console.Clear();
+        var shifts = await _shiftService.GetShiftsAsync();
+        Display.PrintShiftsTable(shifts, "Add Shift");
+
 
 
         ShiftDto shift = new ShiftDto();

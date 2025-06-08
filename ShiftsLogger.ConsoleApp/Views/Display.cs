@@ -16,14 +16,20 @@ public class Display
         var table = new Table()
             .Border(TableBorder.Rounded)
             .AddColumn(new TableColumn("[dodgerblue1]Shift Name[/]"))
-            .AddColumn(new TableColumn("[dodgerblue1]Phone Number[/]"))
-            .AddColumn(new TableColumn("[dodgerblue1]Email Address[/]"))
+            .AddColumn(new TableColumn("[dodgerblue1]Start Time[/]"))
+            .AddColumn(new TableColumn("[dodgerblue1]End Time[/]"))
             .AddColumn(new TableColumn("[dodgerblue1]Duration[/]"))
             .AddColumn(new TableColumn("[dodgerblue1]Worker[/]"));
 
         foreach (ShiftDto shift in shifts)
         {
-            table.AddRow(shift.ShiftName, shift.StartTime.ToString(), shift.EndTime.ToString(), shift.Duration.ToString(), shift.Worker.FirstName);
+            Console.WriteLine($"Debug: {shift.ShiftId}, {shift.ShiftName}, {shift.StartTime}, {shift.EndTime}, {shift.Duration}, {shift.WorkerName}");
+
+            table.AddRow(shift.ShiftName ?? "N/A", 
+                        shift.StartTime.ToString() ?? "N/A", 
+                        shift.EndTime.ToString() ?? "N/A", 
+                        shift.Duration.ToString() ?? "N/A", 
+                        shift.WorkerName ?? "N/A");
         }
 
         AnsiConsole.Write(table);

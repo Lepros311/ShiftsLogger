@@ -18,4 +18,3 @@ public class ShiftService
         return JsonSerializer.Deserialize<List<ShiftDto>>(response);
     }
 }
-

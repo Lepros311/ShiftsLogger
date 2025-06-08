@@ -10,10 +10,6 @@ class Program
         var httpClient = new HttpClient();
         httpClient.BaseAddress = new Uri("https://localhost:7150");
 
-
-        //var context = new ShiftsDbContext();
-        //context.Database.EnsureCreated();
-
         static async Task EnsureDatabaseInitialized(HttpClient httpClient)
         {
             int retries = 5;

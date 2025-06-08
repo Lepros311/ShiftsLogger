@@ -2,6 +2,7 @@
 using ShiftsLogger.ConsoleApp.Models;
 using ShiftsLogger.ConsoleApp.Services;
 using System.Text.Json;
+using System.Net.Http.Json;
 
 namespace ShiftsLogger.App.Views;
 
@@ -22,7 +23,7 @@ public class UserInterface
         while (isAppRunning)
         {
             Console.Clear();
-            var options = new[] { "View/Manage/Interact with Shifts", "View & Manage Workers", "Close Shifts Logger" };
+            var options = new[] { "View & Manage Shifts", "View & Manage Workers", "Close Shifts Logger" };
 
             var mainMenuChoice = AnsiConsole.Prompt(
                 new SelectionPrompt<string>()
@@ -114,8 +115,9 @@ public class UserInterface
                 case "View Shifts":
                     var httpClient = new HttpClient();
                     httpClient.BaseAddress = new Uri("https://localhost:7150");
-                    var response = await httpClient.GetStringAsync("/api/Shifts");
-                    var shifts = JsonSerializer.Deserialize<List<ShiftDto>>(response);
+                    var response = await httpClient.GetAsync("/api/Shifts");
+                    //var shifts = JsonSerializer.Deserialize<List<ShiftDto>>(response);
+                    var shifts = await response.Content.ReadFromJsonAsync<List<ShiftDto>>();
                     Display.PrintShiftsTable(shifts, "View Shifts");
                     ReturnToPreviousMenu();
                     break;

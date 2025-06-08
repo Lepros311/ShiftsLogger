@@ -7,5 +7,6 @@ public class ShiftDto
     public DateTime StartTime { get; set; }
     public DateTime EndTime { get; set; }
     public double Duration { get; set; }
-    public WorkerDto Worker { get; set; }
+    //public WorkerDto Worker { get; set; }
+    public string WorkerName { get; set; }
 }

@@ -5,12 +5,12 @@ namespace ShiftsLogger.ConsoleApp.Services;
 
 public class ShiftService
 {
-    //private readonly HttpClient _httpClient;
+    private readonly HttpClient _httpClient;
 
-    //public ShiftService(HttpClient httpClient)
-    //{
-    //    _httpClient = httpClient;
-    //}
+    public ShiftService(HttpClient httpClient)
+    {
+        _httpClient = httpClient;
+    }
 
     public async Task<List<ShiftDto>> GetShiftsAsync()
     {
@@ -21,10 +21,11 @@ public class ShiftService
         return shifts;
     }
 
-    public async Task<bool> CreateShiftAsync(ShiftDto newShift)
+    public async ShiftDto CreateShiftAsync(ShiftDto newShift)
     {
         var httpClient = new HttpClient();
         httpClient.BaseAddress = new Uri("https://localhost:7150");
         var response = await httpClient.PostAsJsonAsync("/api/Shifts", newShift);
+        return newShift;
     }
 }

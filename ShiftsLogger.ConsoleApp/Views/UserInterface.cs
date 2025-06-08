@@ -113,13 +113,14 @@ public class UserInterface
             switch (shiftsMenuChoice)
             {
                 case "View Shifts":
+                    var httpClient = new HttpClient();
                     var shifts = await _shiftService.GetShiftsAsync();
                     Display.PrintShiftsTable(shifts, "View Shifts");
                     ReturnToPreviousMenu();
                     break;
                 case "Add Shift":
-                    
-                    await _shiftService.CreateShiftAsync(newShift);
+                    ShiftDto shift = PromptForNewShift();
+                    await _shiftService.CreateShiftAsync(shift);
                     ReturnToPreviousMenu();
                     break;
                 //case "Edit Shift":
@@ -141,5 +142,13 @@ public class UserInterface
     {
         Console.Write("\nPress any key to return to the previous menu...");
         Console.ReadKey();
+    }
+
+    public static ShiftDto PromptForNewShift()
+    {
+
+
+        ShiftDto shift = new ShiftDto();
+        return shift;
     }
 }

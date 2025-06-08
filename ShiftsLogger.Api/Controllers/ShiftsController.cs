@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using ShiftsLogger.API.Data;
 using ShiftsLogger.API.Models;
+using ShiftsLogger.API.Services;
 
 namespace ShiftsLogger.API.Controllers
 {
@@ -104,10 +105,24 @@ namespace ShiftsLogger.API.Controllers
         // POST: api/Shifts
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Shift>> PostShift(Shift shift)
+        public async Task<ActionResult<Shift>> PostShift(ShiftDto shiftDto)
         {
-            _context.Shifts.Add(shift);
-            await _context.SaveChangesAsync();
+            var worker = await _context.Workers
+                .FirstOrDefaultAsync(w => (w.FirstName + " " + w.LastName) == shiftDto.WorkerName);
+
+            Shift shift = new Shift
+            {
+                ShiftName = shiftDto.ShiftName,
+                StartTime = shiftDto.StartTime,
+                EndTime = shiftDto.EndTime,
+                Duration = shiftDto.Duration,
+                WorkerId = worker.WorkerId,
+                Worker = worker
+            };
+
+            ShiftService shiftService = new ShiftService(_context);
+            shiftService.CreateShift(shift);
+            //await _context.SaveChangesAsync();
 
             return CreatedAtAction("GetShift", new { id = shift.ShiftId }, shift);
         }

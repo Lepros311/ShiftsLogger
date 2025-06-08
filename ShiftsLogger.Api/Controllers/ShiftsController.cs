@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using ShiftsLogger.Api.Models;
 using ShiftsLogger.API.Data;
 using ShiftsLogger.API.Models;
 using ShiftsLogger.API.Services;
@@ -108,7 +109,14 @@ namespace ShiftsLogger.API.Controllers
         public async Task<ActionResult<Shift>> PostShift(ShiftDto shiftDto)
         {
             var worker = await _context.Workers
-                .FirstOrDefaultAsync(w => (w.FirstName + " " + w.LastName) == shiftDto.WorkerName);
+                .Where(w => (w.FirstName + " " + w.LastName) == shiftDto.WorkerName)
+                .Select(w => new WorkerDto
+                {
+                    WorkerId = w.WorkerId,
+                    FirstName = w.FirstName,
+                    LastName = w.LastName
+                })
+                .FirstOrDefaultAsync();
 
             Shift shift = new Shift
             {
@@ -117,12 +125,11 @@ namespace ShiftsLogger.API.Controllers
                 EndTime = shiftDto.EndTime,
                 Duration = shiftDto.Duration,
                 WorkerId = worker.WorkerId,
-                Worker = worker
+                //Worker = worker
             };
 
             ShiftService shiftService = new ShiftService(_context);
             shiftService.CreateShift(shift);
-            //await _context.SaveChangesAsync();
 
             return CreatedAtAction("GetShift", new { id = shift.ShiftId }, shift);
         }

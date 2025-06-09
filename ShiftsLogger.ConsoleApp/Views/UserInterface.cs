@@ -149,9 +149,9 @@ public class UserInterface
         var shifts = await _shiftService.GetShiftsAsync();
         Display.PrintShiftsTable(shifts, "Add Shift");
 
+        ShiftDto shiftDto = new ShiftDto();
 
 
-        ShiftDto shift = new ShiftDto();
-        return shift;
+        return shiftDto;
     }
 }

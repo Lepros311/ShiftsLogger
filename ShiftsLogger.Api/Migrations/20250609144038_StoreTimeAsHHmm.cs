@@ -5,10 +5,10 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
 
-namespace ShiftsLogger.Migrations
+namespace ShiftsLogger.Api.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class StoreTimeAsHHmm : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -35,9 +35,10 @@ namespace ShiftsLogger.Migrations
                     ShiftId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     ShiftName = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    StartTime = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    EndTime = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Duration = table.Column<double>(type: "float", nullable: false),
+                    Date = table.Column<DateOnly>(type: "date", nullable: false),
+                    StartTime = table.Column<TimeOnly>(type: "TIME(0)", nullable: false),
+                    EndTime = table.Column<TimeOnly>(type: "TIME(0)", nullable: false),
+                    Duration = table.Column<TimeOnly>(type: "time", nullable: false, computedColumnSql: "\r\n            CONVERT(TIME(0), \r\n                CASE \r\n                    WHEN EndTime < StartTime \r\n                        THEN DATEADD(MINUTE, DATEDIFF(MINUTE, \r\n                            CAST(StartTime AS DATETIME), \r\n                            DATEADD(DAY, 1, CAST(EndTime AS DATETIME))\r\n                        ), '00:00')\r\n                    ELSE DATEADD(MINUTE, DATEDIFF(MINUTE, \r\n                            CAST(StartTime AS DATETIME), \r\n                            CAST(EndTime AS DATETIME)\r\n                        ), '00:00')\r\n                END)"),
                     WorkerId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
@@ -64,17 +65,17 @@ namespace ShiftsLogger.Migrations
 
             migrationBuilder.InsertData(
                 table: "Shifts",
-                columns: new[] { "ShiftId", "Duration", "EndTime", "ShiftName", "StartTime", "WorkerId" },
+                columns: new[] { "ShiftId", "Date", "EndTime", "ShiftName", "StartTime", "WorkerId" },
                 values: new object[,]
                 {
-                    { 1, 8.0, new DateTime(2023, 10, 15, 16, 0, 0, 0, DateTimeKind.Unspecified), "1st", new DateTime(2023, 10, 15, 8, 0, 0, 0, DateTimeKind.Unspecified), 1 },
-                    { 2, 8.0, new DateTime(2023, 10, 15, 0, 0, 0, 0, DateTimeKind.Unspecified), "2nd", new DateTime(2023, 10, 15, 16, 0, 0, 0, DateTimeKind.Unspecified), 1 },
-                    { 3, 8.0, new DateTime(2023, 10, 15, 0, 0, 0, 0, DateTimeKind.Unspecified), "2nd", new DateTime(2023, 10, 15, 16, 0, 0, 0, DateTimeKind.Unspecified), 2 },
-                    { 4, 8.0, new DateTime(2023, 10, 15, 8, 0, 0, 0, DateTimeKind.Unspecified), "3rd", new DateTime(2023, 10, 15, 0, 0, 0, 0, DateTimeKind.Unspecified), 2 },
-                    { 5, 8.0, new DateTime(2023, 10, 15, 8, 0, 0, 0, DateTimeKind.Unspecified), "3rd", new DateTime(2023, 10, 15, 0, 0, 0, 0, DateTimeKind.Unspecified), 3 },
-                    { 6, 8.0, new DateTime(2023, 10, 15, 0, 0, 0, 0, DateTimeKind.Unspecified), "2nd", new DateTime(2023, 10, 15, 16, 0, 0, 0, DateTimeKind.Unspecified), 3 },
-                    { 7, 8.0, new DateTime(2023, 10, 15, 16, 0, 0, 0, DateTimeKind.Unspecified), "1st", new DateTime(2023, 10, 15, 8, 0, 0, 0, DateTimeKind.Unspecified), 4 },
-                    { 8, 8.0, new DateTime(2023, 10, 15, 16, 0, 0, 0, DateTimeKind.Unspecified), "1st", new DateTime(2023, 10, 15, 8, 0, 0, 0, DateTimeKind.Unspecified), 4 }
+                    { 1, new DateOnly(2023, 10, 15), new TimeOnly(16, 0, 0), "1st", new TimeOnly(8, 0, 0), 1 },
+                    { 2, new DateOnly(2023, 10, 15), new TimeOnly(0, 0, 0), "2nd", new TimeOnly(16, 0, 0), 1 },
+                    { 3, new DateOnly(2023, 10, 15), new TimeOnly(0, 0, 0), "2nd", new TimeOnly(16, 0, 0), 2 },
+                    { 4, new DateOnly(2023, 10, 15), new TimeOnly(8, 0, 0), "3rd", new TimeOnly(0, 0, 0), 2 },
+                    { 5, new DateOnly(2023, 10, 15), new TimeOnly(0, 0, 0), "3rd", new TimeOnly(16, 0, 0), 3 },
+                    { 6, new DateOnly(2023, 10, 15), new TimeOnly(0, 0, 0), "2nd", new TimeOnly(16, 0, 0), 3 },
+                    { 7, new DateOnly(2023, 10, 15), new TimeOnly(16, 0, 0), "1st", new TimeOnly(8, 0, 0), 4 },
+                    { 8, new DateOnly(2023, 10, 15), new TimeOnly(16, 0, 0), "1st", new TimeOnly(8, 0, 0), 4 }
                 });
 
             migrationBuilder.CreateIndex(

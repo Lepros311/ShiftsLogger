@@ -1,4 +1,6 @@
-﻿namespace ShiftsLogger.API.Models;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace ShiftsLogger.API.Models;
 
 public class Shift
 {
@@ -6,11 +8,14 @@ public class Shift
 
     public string ShiftName { get; set; }
 
-    public DateTime StartTime { get; set; }
+    public DateOnly Date { get; set; }
 
-    public DateTime EndTime { get; set; }
+    public TimeOnly StartTime { get; set; }
 
-    public double Duration { get; set; }
+    public TimeOnly EndTime { get; set; }
+
+    [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
+    public TimeOnly Duration { get; set; }
 
     public int WorkerId { get; set; }
 

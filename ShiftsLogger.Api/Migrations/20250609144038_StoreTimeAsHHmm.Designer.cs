@@ -7,14 +7,13 @@ using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ShiftsLogger.API.Data;
 
-
 #nullable disable
 
-namespace ShiftsLogger.Migrations
+namespace ShiftsLogger.Api.Migrations
 {
     [DbContext(typeof(ShiftsDbContext))]
-    [Migration("20250605002124_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20250609144038_StoreTimeAsHHmm")]
+    partial class StoreTimeAsHHmm
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -26,7 +25,7 @@ namespace ShiftsLogger.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("ShiftsLogger.Models.Shift", b =>
+            modelBuilder.Entity("ShiftsLogger.API.Models.Shift", b =>
                 {
                     b.Property<int>("ShiftId")
                         .ValueGeneratedOnAdd()
@@ -34,18 +33,23 @@ namespace ShiftsLogger.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ShiftId"));
 
-                    b.Property<double>("Duration")
-                        .HasColumnType("float");
+                    b.Property<DateOnly>("Date")
+                        .HasColumnType("date");
 
-                    b.Property<DateTime>("EndTime")
-                        .HasColumnType("datetime2");
+                    b.Property<TimeOnly>("Duration")
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("time")
+                        .HasComputedColumnSql("\r\n            CONVERT(TIME(0), \r\n                CASE \r\n                    WHEN EndTime < StartTime \r\n                        THEN DATEADD(MINUTE, DATEDIFF(MINUTE, \r\n                            CAST(StartTime AS DATETIME), \r\n                            DATEADD(DAY, 1, CAST(EndTime AS DATETIME))\r\n                        ), '00:00')\r\n                    ELSE DATEADD(MINUTE, DATEDIFF(MINUTE, \r\n                            CAST(StartTime AS DATETIME), \r\n                            CAST(EndTime AS DATETIME)\r\n                        ), '00:00')\r\n                END)");
+
+                    b.Property<TimeOnly>("EndTime")
+                        .HasColumnType("TIME(0)");
 
                     b.Property<string>("ShiftName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("StartTime")
-                        .HasColumnType("datetime2");
+                    b.Property<TimeOnly>("StartTime")
+                        .HasColumnType("TIME(0)");
 
                     b.Property<int>("WorkerId")
                         .HasColumnType("int");
@@ -60,78 +64,86 @@ namespace ShiftsLogger.Migrations
                         new
                         {
                             ShiftId = 1,
-                            Duration = 8.0,
-                            EndTime = new DateTime(2023, 10, 15, 16, 0, 0, 0, DateTimeKind.Unspecified),
+                            Date = new DateOnly(2023, 10, 15),
+                            Duration = new TimeOnly(0, 0, 0),
+                            EndTime = new TimeOnly(16, 0, 0),
                             ShiftName = "1st",
-                            StartTime = new DateTime(2023, 10, 15, 8, 0, 0, 0, DateTimeKind.Unspecified),
+                            StartTime = new TimeOnly(8, 0, 0),
                             WorkerId = 1
                         },
                         new
                         {
                             ShiftId = 2,
-                            Duration = 8.0,
-                            EndTime = new DateTime(2023, 10, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Date = new DateOnly(2023, 10, 15),
+                            Duration = new TimeOnly(0, 0, 0),
+                            EndTime = new TimeOnly(0, 0, 0),
                             ShiftName = "2nd",
-                            StartTime = new DateTime(2023, 10, 15, 16, 0, 0, 0, DateTimeKind.Unspecified),
+                            StartTime = new TimeOnly(16, 0, 0),
                             WorkerId = 1
                         },
                         new
                         {
                             ShiftId = 3,
-                            Duration = 8.0,
-                            EndTime = new DateTime(2023, 10, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Date = new DateOnly(2023, 10, 15),
+                            Duration = new TimeOnly(0, 0, 0),
+                            EndTime = new TimeOnly(0, 0, 0),
                             ShiftName = "2nd",
-                            StartTime = new DateTime(2023, 10, 15, 16, 0, 0, 0, DateTimeKind.Unspecified),
+                            StartTime = new TimeOnly(16, 0, 0),
                             WorkerId = 2
                         },
                         new
                         {
                             ShiftId = 4,
-                            Duration = 8.0,
-                            EndTime = new DateTime(2023, 10, 15, 8, 0, 0, 0, DateTimeKind.Unspecified),
+                            Date = new DateOnly(2023, 10, 15),
+                            Duration = new TimeOnly(0, 0, 0),
+                            EndTime = new TimeOnly(8, 0, 0),
                             ShiftName = "3rd",
-                            StartTime = new DateTime(2023, 10, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            StartTime = new TimeOnly(0, 0, 0),
                             WorkerId = 2
                         },
                         new
                         {
                             ShiftId = 5,
-                            Duration = 8.0,
-                            EndTime = new DateTime(2023, 10, 15, 8, 0, 0, 0, DateTimeKind.Unspecified),
+                            Date = new DateOnly(2023, 10, 15),
+                            Duration = new TimeOnly(0, 0, 0),
+                            EndTime = new TimeOnly(0, 0, 0),
                             ShiftName = "3rd",
-                            StartTime = new DateTime(2023, 10, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            StartTime = new TimeOnly(16, 0, 0),
                             WorkerId = 3
                         },
                         new
                         {
                             ShiftId = 6,
-                            Duration = 8.0,
-                            EndTime = new DateTime(2023, 10, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Date = new DateOnly(2023, 10, 15),
+                            Duration = new TimeOnly(0, 0, 0),
+                            EndTime = new TimeOnly(0, 0, 0),
                             ShiftName = "2nd",
-                            StartTime = new DateTime(2023, 10, 15, 16, 0, 0, 0, DateTimeKind.Unspecified),
+                            StartTime = new TimeOnly(16, 0, 0),
                             WorkerId = 3
                         },
                         new
                         {
                             ShiftId = 7,
-                            Duration = 8.0,
-                            EndTime = new DateTime(2023, 10, 15, 16, 0, 0, 0, DateTimeKind.Unspecified),
+                            Date = new DateOnly(2023, 10, 15),
+                            Duration = new TimeOnly(0, 0, 0),
+                            EndTime = new TimeOnly(16, 0, 0),
                             ShiftName = "1st",
-                            StartTime = new DateTime(2023, 10, 15, 8, 0, 0, 0, DateTimeKind.Unspecified),
+                            StartTime = new TimeOnly(8, 0, 0),
                             WorkerId = 4
                         },
                         new
                         {
                             ShiftId = 8,
-                            Duration = 8.0,
-                            EndTime = new DateTime(2023, 10, 15, 16, 0, 0, 0, DateTimeKind.Unspecified),
+                            Date = new DateOnly(2023, 10, 15),
+                            Duration = new TimeOnly(0, 0, 0),
+                            EndTime = new TimeOnly(16, 0, 0),
                             ShiftName = "1st",
-                            StartTime = new DateTime(2023, 10, 15, 8, 0, 0, 0, DateTimeKind.Unspecified),
+                            StartTime = new TimeOnly(8, 0, 0),
                             WorkerId = 4
                         });
                 });
 
-            modelBuilder.Entity("ShiftsLogger.Models.Worker", b =>
+            modelBuilder.Entity("ShiftsLogger.API.Models.Worker", b =>
                 {
                     b.Property<int>("WorkerId")
                         .ValueGeneratedOnAdd()
@@ -186,9 +198,9 @@ namespace ShiftsLogger.Migrations
                         });
                 });
 
-            modelBuilder.Entity("ShiftsLogger.Models.Shift", b =>
+            modelBuilder.Entity("ShiftsLogger.API.Models.Shift", b =>
                 {
-                    b.HasOne("ShiftsLogger.Models.Worker", "Worker")
+                    b.HasOne("ShiftsLogger.API.Models.Worker", "Worker")
                         .WithMany("Shifts")
                         .HasForeignKey("WorkerId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -197,7 +209,7 @@ namespace ShiftsLogger.Migrations
                     b.Navigation("Worker");
                 });
 
-            modelBuilder.Entity("ShiftsLogger.Models.Worker", b =>
+            modelBuilder.Entity("ShiftsLogger.API.Models.Worker", b =>
                 {
                     b.Navigation("Shifts");
                 });

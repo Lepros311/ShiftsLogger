@@ -31,6 +31,7 @@ namespace ShiftsLogger.API.Controllers
                     {
                         ShiftId = s.ShiftId,
                         ShiftName = s.ShiftName,
+                        Date = s.Date,
                         StartTime = s.StartTime,
                         EndTime = s.EndTime,
                         Duration = s.Duration,
@@ -57,6 +58,7 @@ namespace ShiftsLogger.API.Controllers
                 {
                     ShiftId = s.ShiftId,
                     ShiftName = s.ShiftName,
+                    Date = s.Date,
                     StartTime = s.StartTime,
                     EndTime = s.EndTime,
                     Duration = s.Duration,
@@ -121,6 +123,7 @@ namespace ShiftsLogger.API.Controllers
             Shift shift = new Shift
             {
                 ShiftName = shiftDto.ShiftName,
+                Date = shiftDto.Date,
                 StartTime = shiftDto.StartTime,
                 EndTime = shiftDto.EndTime,
                 Duration = shiftDto.Duration,

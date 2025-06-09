@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using ShiftsLogger.Api.Converters;
 using ShiftsLogger.API.Data;
 using ShiftsLogger.API.Services;
 
@@ -6,7 +7,12 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+{
+    options.JsonSerializerOptions.Converters.Add(new DateOnlyJsonConverter());
+    options.JsonSerializerOptions.Converters.Add(new TimeOnlyJsonConverter());
+});
 
 builder.Services.AddDbContext<ShiftsDbContext>(opt => opt.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 

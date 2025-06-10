@@ -7,8 +7,10 @@ class Program
 
         Console.Title = "Shifts Logger";
 
-        var httpClient = new HttpClient();
-        httpClient.BaseAddress = new Uri("https://localhost:7150");
+        var httpClient = new HttpClient
+        {
+            BaseAddress = new Uri("https://localhost:7150")
+        };
 
         static async Task EnsureDatabaseInitialized(HttpClient httpClient)
         {

@@ -1,10 +1,15 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using ShiftsLogger.API.Data;
 using ShiftsLogger.API.Models;
+using System.Diagnostics.CodeAnalysis;
+using System.Threading.Tasks;
 
 namespace ShiftsLogger.API.Controllers;
 
-public class WorkersController
+[Route("api/[controller]")]
+[ApiController]
+public class WorkersController : ControllerBase
 {
     private readonly ShiftsDbContext _context;
 
@@ -13,27 +18,70 @@ public class WorkersController
         _context = new ShiftsDbContext(options); 
     }
 
-    internal List<Worker> GetWorkers()
+    [HttpGet]
+    public List<Worker> GetWorkersWithShifts()
     {
         List<Worker> workers = _context.Workers.Include(x => x.Shifts).ToList();
         return workers;
     }
 
-    internal void AddWorker(Worker worker)
+    [HttpGet("workers")]
+    public List<Worker> GetWorkers()
     {
+        List<Worker> workers = _context.Workers.ToList();
+        return workers;
+    }
+
+    [HttpPost]
+    public IActionResult AddWorker([FromBody] Worker worker)
+    {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest();
+        }
+
         _context.Add(worker);
         _context.SaveChanges();
+
+        return Ok();
     }
 
-    internal void DeleteWorker(Worker worker)
+    [HttpPut("{id}")]
+    public async Task<IActionResult> UpdateWorker(int id, [FromBody] Worker worker)
     {
-        _context.Remove(worker);
+        if (!ModelState.IsValid)
+        {
+            return BadRequest();
+        }
+
+        var workerById = await _context.Workers.FindAsync(id);
+        if (workerById == null)
+        {
+            return NotFound();
+        }
+
+        workerById.FirstName = worker.FirstName;
+        workerById.LastName = worker.LastName;
+        workerById.Title = worker.Title;
+
+        _context.Update(workerById);
         _context.SaveChanges();
+
+        return Ok();
     }
 
-    internal void UpdateWorker(Worker worker)
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> DeleteWorker(int id)
     {
-        _context.Update(worker);
+        var workerById = await _context.Workers.FindAsync(id);
+        if (workerById == null)
+        {
+            return NotFound();
+        }
+
+        _context.Remove(workerById);
         _context.SaveChanges();
+
+        return NoContent();
     }
 }

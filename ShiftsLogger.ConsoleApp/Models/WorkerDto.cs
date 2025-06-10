@@ -6,4 +6,9 @@ public class WorkerDto
     public string FirstName { get; set; }
     public string LastName { get; set; }
     public string Title { get; set; }
+
+    public override string ToString()
+    {
+        return $"{Title}. {FirstName} {LastName}";
+    }
 }

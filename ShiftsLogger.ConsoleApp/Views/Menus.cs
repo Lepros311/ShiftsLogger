@@ -72,7 +72,7 @@ internal class Menus
             switch (workersMenuChoice)
             {
                 case "View Workers":
-                    await WorkerController.ViewWorkers();
+                    await WorkerController.ViewWorkers("View Workers");
                     ReturnToPreviousMenu();
                     break;
                 case "Add Worker":

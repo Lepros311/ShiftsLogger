@@ -44,11 +44,12 @@ public class Display
         AnsiConsole.Write(rule);
 
         var table = new Table();
-        table.AddColumn("[dodgerblue1]Worker Name[/]");
+        table.AddColumn("[dodgerblue1]Name[/]");
+        table.AddColumn("[dodgerblue1]Title[/]");
 
         foreach (WorkerDto worker in workers)
         {
-            table.AddRow(worker.ToString());
+            table.AddRow($"{worker.FirstName} {worker.LastName}", worker.Title);
         }
 
         AnsiConsole.Write(table);

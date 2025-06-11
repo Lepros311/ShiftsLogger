@@ -11,6 +11,8 @@ public class WorkerService
     public WorkerService(HttpClient httpClient)
     {
         _httpClient = httpClient;
+        _httpClient.BaseAddress = new Uri("https://localhost:7150/api/");
+        
     }
 
     public async Task<List<WorkerDto>> GetWorkersWithShiftsAsync()
@@ -21,8 +23,14 @@ public class WorkerService
 
     public async Task<List<WorkerDto>> GetWorkersAsync()
     {
-        var response = await _httpClient.GetStringAsync("Workers/Workers");
+        var response = await _httpClient.GetStringAsync("Workers/workers");
         return JsonSerializer.Deserialize<List<WorkerDto>>(response, jsonOptions);
+    }
+
+    public async Task<WorkerDto> GetWorkerAsync(int workerId)
+    {
+        var response = await _httpClient.GetStringAsync("Workers/{workerId}");
+        return JsonSerializer.Deserialize<WorkerDto>(response, jsonOptions);
     }
 
     public async Task<bool> InsertWorker(WorkerDto worker)

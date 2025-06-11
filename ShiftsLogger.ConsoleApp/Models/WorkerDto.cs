@@ -7,8 +7,8 @@ public class WorkerDto
     public string LastName { get; set; }
     public string Title { get; set; }
 
-    public override string ToString()
-    {
-        return $"{Title}. {FirstName} {LastName}";
-    }
+    //public override string ToString()
+    //{
+    //    return $"{FirstName} {LastName}, {Title}";
+    //}
 }

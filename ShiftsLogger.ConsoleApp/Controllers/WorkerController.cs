@@ -1,34 +1,47 @@
-﻿using ShiftsLogger.ConsoleApp.Services;
+﻿using ShiftsLogger.ConsoleApp.Models;
+using ShiftsLogger.ConsoleApp.Services;
 using ShiftsLogger.ConsoleApp.Views;
-using ShiftsLogger.ConsoleApp.Models;
+using Spectre.Console;
 
 namespace ShiftsLogger.ConsoleApp.Controllers;
 
 internal class WorkerController
 {
-    public static async Task ViewWorkers()
+    public static async Task ViewWorkers(string heading)
     {
         var workerService = new WorkerService(new HttpClient());
         var viewWorkers = await workerService.GetWorkersAsync();
-        Display.PrintWorkersTable(viewWorkers, "View Workers");
+        Display.PrintWorkersTable(viewWorkers, heading);
+    }
+
+    public static async Task ViewWorker(string heading, int workerId)
+    {
+        var workerService = new WorkerService(new HttpClient());
+        var viewWorkers = await workerService.GetWorkerAsync(workerId);
+        Display.PrintWorkersTable(viewWorkers, heading);
     }
 
     public static async Task CreateWorker()
     {
+        await ViewWorkers("Add Worker");
         var userInterface = new UserInterface(new ShiftService(new HttpClient()), new WorkerService(new HttpClient()));
         var workerService = new WorkerService(new HttpClient());
-        var newTitle = userInterface.ReadString("Enter a Title");
-        var newFirstName = userInterface.ReadString("Enter First Name");
-        var newLastName = userInterface.ReadString("Enter Last Name");
+        var newFirstName = userInterface.ReadString("Enter First Name: ");
+        var newLastName = userInterface.ReadString("Enter Last Name: ");
+        var newTitle = userInterface.ReadString("Enter a Title: ");
         var worker = new WorkerDto { Title = newTitle, FirstName = newFirstName, LastName = newLastName };
         var insertResult = await workerService.InsertWorker(worker);
-        if (insertResult)
+        try
         {
-            Console.WriteLine("Successfully saved worker");
+            Console.Clear();
+            await ViewWorkers("Create Worker");
+            Console.WriteLine("\nSuccessfully saved worker");
         }
-        else
+        catch (HttpRequestException e) 
         {
-            Console.WriteLine("Failed to save worker");
+            Console.Clear();
+            await ViewWorkers("Create Worker");
+            Console.WriteLine($"\nFailed to save worker. Request error: {e.Message}");
         }
     }
 
@@ -37,13 +50,16 @@ internal class WorkerController
         var userInterface = new UserInterface(new ShiftService(new HttpClient()), new WorkerService(new HttpClient()));
         var workerService = new WorkerService(new HttpClient());
         var editWorkers = await workerService.GetWorkersAsync();
-        var editWorkersDict = editWorkers.ToDictionary(x => $"{x.WorkerId}. {x.FirstName} {x.LastName}");
-        var selectedEditWorkerOption = userInterface.SelectOption("Choose Worker to edit", editWorkersDict.Keys);
+        var editWorkersDict = editWorkers.ToDictionary(x => $"{x.FirstName} {x.LastName}, {x.Title}");
+        //var rule = new Rule($"[green]Edit Worker[/]");
+        //rule.Justification = Justify.Left;
+        //AnsiConsole.Write(rule);
+        var selectedEditWorkerOption = userInterface.SelectOption("\nChoose Worker to Edit:", editWorkersDict.Keys);
         var editWorker = editWorkersDict[selectedEditWorkerOption];
-
-        var editTitle = userInterface.ReadString("Enter a Title", editWorker.Title);
-        var editFirstName = userInterface.ReadString("Enter First Name", editWorker.FirstName);
-        var editLastName = userInterface.ReadString("Enter Last Name", editWorker.LastName);
+        await ViewWorker("Edit Worker", editWorker.WorkerId);
+        var editFirstName = userInterface.ReadString("Enter First Name: ", editWorker.FirstName);
+        var editLastName = userInterface.ReadString("Enter Last Name: ", editWorker.LastName);
+        var editTitle = userInterface.ReadString("Enter a Title: ", editWorker.Title);
 
         editWorker.FirstName = editFirstName;
         editWorker.LastName = editLastName;
@@ -52,16 +68,21 @@ internal class WorkerController
         var editResult = await workerService.UpdateWorker(editWorker);
         if (editResult)
         {
-            Console.WriteLine("Successfully updated worker");
+            Console.Clear();
+            await ViewWorkers("Edit Worker");
+            Console.WriteLine("\nSuccessfully edited worker");
         }
         else
         {
-            Console.WriteLine("Failed to update worker");
+            Console.Clear();
+            await ViewWorkers("Edit Worker");
+            Console.WriteLine("\nFailed to edit worker");
         }
     }
 
     public static async Task DeleteWorker()
     {
+        await ViewWorkers("Delete Worker");
         var userInterface = new UserInterface(new ShiftService(new HttpClient()), new WorkerService(new HttpClient()));
         var workerService = new WorkerService(new HttpClient());
         var deleteWorkers = await workerService.GetWorkersAsync();
@@ -74,6 +95,8 @@ internal class WorkerController
         if (deleteAnswer.ToLower() == "y")
         {
             await workerService.DeleteWorker(deleteWorker.WorkerId);
+            Console.Clear();
+            await ViewWorkers("Delete Worker");
             Console.WriteLine("Successfully deleted worker");
         }
     }

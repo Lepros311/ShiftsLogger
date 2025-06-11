@@ -23,12 +23,12 @@ public class UserInterface
 
     public string ReadString(string question)
     {
-        Console.WriteLine(question);
+        Console.Write(question);
         var answer = Console.ReadLine();
 
         if (string.IsNullOrEmpty(answer) || string.IsNullOrWhiteSpace(answer))
         {
-            Console.WriteLine("Invalid input");
+            Console.WriteLine("Invalid input\n");
             answer = ReadString(question);
         }
 
@@ -43,13 +43,13 @@ public class UserInterface
 
         if (string.IsNullOrEmpty(answer) || string.IsNullOrWhiteSpace(answer))
         {
-            Console.WriteLine("Invalid input");
+            Console.WriteLine("Invalid input\n");
             answer = ReadString(question, options);
         }
 
         if (!options.Contains(answer.ToLower()))
         {
-            Console.WriteLine("Invalid option");
+            Console.WriteLine("Invalid option\n");
             answer = ReadString(question, options);
         }
 
@@ -58,8 +58,8 @@ public class UserInterface
 
     public string ReadString(string question, string currentValue)
     {
-        Console.WriteLine(question);
         Console.WriteLine("Current Value: " + currentValue);
+        Console.WriteLine(question);
         Console.WriteLine("New Value: ");
         var answer = Console.ReadLine();
 

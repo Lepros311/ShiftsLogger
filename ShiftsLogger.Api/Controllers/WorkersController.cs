@@ -2,8 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using ShiftsLogger.API.Data;
 using ShiftsLogger.API.Models;
-using System.Diagnostics.CodeAnalysis;
-using System.Threading.Tasks;
+using ShiftsLogger.API.Services;
 
 namespace ShiftsLogger.API.Controllers;
 
@@ -13,9 +12,9 @@ public class WorkersController : ControllerBase
 {
     private readonly ShiftsDbContext _context;
 
-    public WorkersController(DbContextOptions<ShiftsDbContext> options) 
-    { 
-        _context = new ShiftsDbContext(options); 
+    public WorkersController(DbContextOptions<ShiftsDbContext> options)
+    {
+        _context = new ShiftsDbContext(options);
     }
 
     [HttpGet]
@@ -30,6 +29,22 @@ public class WorkersController : ControllerBase
     {
         List<Worker> workers = _context.Workers.ToList();
         return workers;
+    }
+
+    [HttpGet("{id}")]
+    public ActionResult<Worker> GetWorkerById(int id)
+    {
+        var result = _context.Workers.Find(id);
+
+        if (result == null)
+        {
+            return NotFound();
+        }
+
+        return Ok(result);
+
+        //Worker worker = _context.Workers.Find(id);
+        //return worker;
     }
 
     [HttpPost]

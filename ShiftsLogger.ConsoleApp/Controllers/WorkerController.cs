@@ -7,17 +7,21 @@ namespace ShiftsLogger.ConsoleApp.Controllers;
 
 internal class WorkerController
 {
-    public static async Task ViewWorkers(string heading)
+    public static async Task ViewWorkers(string heading, int? workerId = null)
     {
         var workerService = new WorkerService(new HttpClient());
-        var viewWorkers = await workerService.GetWorkersAsync();
-        Display.PrintWorkersTable(viewWorkers, heading);
-    }
+        List<WorkerDto> viewWorkers;
+        if (workerId.HasValue)
+        {
+            var worker = await workerService.GetWorkerAsync(workerId.Value);
+            viewWorkers = worker is not null ? new List<WorkerDto> { worker } : new List<WorkerDto>();
+            
+        }
+        else
+        {
+            viewWorkers = await workerService.GetWorkersAsync();
+        }
 
-    public static async Task ViewWorker(string heading, int workerId)
-    {
-        var workerService = new WorkerService(new HttpClient());
-        var viewWorkers = await workerService.GetWorkerAsync(workerId);
         Display.PrintWorkersTable(viewWorkers, heading);
     }
 
@@ -51,12 +55,10 @@ internal class WorkerController
         var workerService = new WorkerService(new HttpClient());
         var editWorkers = await workerService.GetWorkersAsync();
         var editWorkersDict = editWorkers.ToDictionary(x => $"{x.FirstName} {x.LastName}, {x.Title}");
-        //var rule = new Rule($"[green]Edit Worker[/]");
-        //rule.Justification = Justify.Left;
-        //AnsiConsole.Write(rule);
+
         var selectedEditWorkerOption = userInterface.SelectOption("\nChoose Worker to Edit:", editWorkersDict.Keys);
         var editWorker = editWorkersDict[selectedEditWorkerOption];
-        await ViewWorker("Edit Worker", editWorker.WorkerId);
+        await ViewWorkers("Edit Worker", editWorker.WorkerId);
         var editFirstName = userInterface.ReadString("Enter First Name: ", editWorker.FirstName);
         var editLastName = userInterface.ReadString("Enter Last Name: ", editWorker.LastName);
         var editTitle = userInterface.ReadString("Enter a Title: ", editWorker.Title);

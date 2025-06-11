@@ -29,7 +29,7 @@ public class WorkerService
 
     public async Task<WorkerDto> GetWorkerAsync(int workerId)
     {
-        var response = await _httpClient.GetStringAsync("Workers/{workerId}");
+        var response = await _httpClient.GetStringAsync($"Workers/{workerId}");
         return JsonSerializer.Deserialize<WorkerDto>(response, jsonOptions);
     }
 

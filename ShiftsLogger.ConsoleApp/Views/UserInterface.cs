@@ -2,7 +2,7 @@
 using ShiftsLogger.ConsoleApp.Services;
 using Spectre.Console;
 
-namespace ShiftsLogger.App.Views;
+namespace ShiftsLogger.ConsoleApp.Views;
 
 public class UserInterface
 {
@@ -21,7 +21,7 @@ public class UserInterface
 
 
 
-    private string ReadString(string question)
+    public string ReadString(string question)
     {
         Console.WriteLine(question);
         var answer = Console.ReadLine();
@@ -36,7 +36,7 @@ public class UserInterface
     }
 
 
-    private string ReadString(string question, string[] options)
+    public string ReadString(string question, string[] options)
     {
         Console.WriteLine(question);
         var answer = Console.ReadLine();
@@ -56,7 +56,7 @@ public class UserInterface
         return answer;
     }
 
-    private string ReadString(string question, string currentValue)
+    public string ReadString(string question, string currentValue)
     {
         Console.WriteLine(question);
         Console.WriteLine("Current Value: " + currentValue);
@@ -71,7 +71,7 @@ public class UserInterface
         return answer;
     }
 
-    private string SelectOption(string title, IEnumerable<string> choices)
+    public string SelectOption(string title, IEnumerable<string> choices)
     {
         var option = AnsiConsole.Prompt(
                 new SelectionPrompt<string>()

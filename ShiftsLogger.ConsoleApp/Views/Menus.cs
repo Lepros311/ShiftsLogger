@@ -1,11 +1,7 @@
-﻿using Microsoft.Extensions.Options;
-using ShiftsLogger.API.Controllers;
-using ShiftsLogger.App.Views;
+﻿using ShiftsLogger.ConsoleApp.Controllers;
 using ShiftsLogger.ConsoleApp.Models;
 using ShiftsLogger.ConsoleApp.Services;
 using Spectre.Console;
-using System.Net.Http.Json;
-using System.Text.Json;
 
 namespace ShiftsLogger.ConsoleApp.Views;
 
@@ -60,6 +56,7 @@ internal class Menus
     internal async Task PrintSelectionWorkersMenu()
     {
         var isWorkersMenuRunning = true;
+        var userInterface = new UserInterface(new ShiftService(new HttpClient()), new WorkerService(new HttpClient()));
         while (isWorkersMenuRunning)
         {
             Console.Clear();
@@ -75,66 +72,19 @@ internal class Menus
             switch (workersMenuChoice)
             {
                 case "View Workers":
-                    var viewWorkers = await _workerService.GetWorkersAsync();
-                    Display.PrintWorkersTable(viewWorkers, "View Workers");
+                    await WorkerController.ViewWorkers();
                     ReturnToPreviousMenu();
                     break;
                 case "Add Worker":
-                    var newTitle = ReadString("Enter a Title");
-                    var newFirstName = ReadString("Enter First Name");
-                    var newLastName = ReadString("Enter Last Name");
-                    var worker = new WorkerDto { Title = newTitle, FirstName = newFirstName, LastName = newLastName };
-                    var insertResult = await _workerService.InsertWorker(worker);
-                    if (insertResult)
-                    {
-                        Console.WriteLine("Successfully saved worker");
-                    }
-                    else
-                    {
-                        Console.WriteLine("Failed to save worker");
-                    }
-
+                    await WorkerController.CreateWorker();
                     ReturnToPreviousMenu();
                     break;
                 case "Edit Worker":
-                    var editWorkers = await _workerService.GetWorkersAsync();
-                    var editWorkersDict = editWorkers.ToDictionary(x => $"{x.WorkerId}. {x.FirstName} {x.LastName}");
-                    var selectedEditWorkerOption = SelectOption("Choose Worker to edit", editWorkersDict.Keys);
-                    var editWorker = editWorkersDict[selectedEditWorkerOption];
-
-                    var editTitle = ReadString("Enter a Title", editWorker.Title);
-                    var editFirstName = ReadString("Enter First Name", editWorker.FirstName);
-                    var editLastName = ReadString("Enter Last Name", editWorker.LastName);
-
-                    editWorker.FirstName = editFirstName;
-                    editWorker.LastName = editLastName;
-                    editWorker.Title = editTitle;
-
-                    var editResult = await _workerService.UpdateWorker(editWorker);
-                    if (editResult)
-                    {
-                        Console.WriteLine("Successfully updated worker");
-                    }
-                    else
-                    {
-                        Console.WriteLine("Failed to update worker");
-                    }
-
+                    await WorkerController.EditWorker();
                     ReturnToPreviousMenu();
                     break;
                 case "Delete Worker":
-                    var deleteWorkers = await _workerService.GetWorkersAsync();
-                    var deleteWorkersDict = deleteWorkers.ToDictionary(x => $"{x.WorkerId}. {x.FirstName} {x.LastName}");
-                    var selectedDeleteWorkerOption = SelectOption("Choose Worker to delete", deleteWorkersDict.Keys);
-
-                    var deleteWorker = deleteWorkersDict[selectedDeleteWorkerOption];
-
-                    var deleteAnswer = ReadString($"Are you sure you want to delte worker: '{deleteWorker.FirstName} {deleteWorker.LastName}'? Y/N", ["y", "n"]);
-                    if (deleteAnswer.ToLower() == "y")
-                    {
-                        await _workerService.DeleteWorker(deleteWorker.WorkerId);
-                        Console.WriteLine("Successfully deleted worker");
-                    }
+                    await WorkerController.DeleteWorker();
                     ReturnToPreviousMenu();
                     break;
                 case "Return to Main Menu":
@@ -148,6 +98,7 @@ internal class Menus
     internal async Task PrintSelectionShiftsMenu()
     {
         var isShiftsMenuRunning = true;
+        var userInterface = new UserInterface(new ShiftService(new HttpClient()), new WorkerService(new HttpClient()));
         while (isShiftsMenuRunning)
         {
             Console.Clear();
@@ -168,7 +119,7 @@ internal class Menus
                     ReturnToPreviousMenu();
                     break;
                 case "Add Shift":
-                    ShiftDto shift = await PromptForNewShift();
+                    ShiftDto shift = await userInterface.PromptForNewShift();
                     await _shiftService.CreateShiftAsync(shift);
                     ReturnToPreviousMenu();
                     break;

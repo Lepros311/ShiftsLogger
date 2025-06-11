@@ -1,7 +1,7 @@
 ﻿using Spectre.Console;
 using ShiftsLogger.ConsoleApp.Models;
 
-namespace ShiftsLogger.App.Views;
+namespace ShiftsLogger.ConsoleApp.Views;
 
 public class Display
 {

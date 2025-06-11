@@ -1,4 +1,4 @@
-﻿using ShiftsLogger.App.Views;
+﻿using ShiftsLogger.ConsoleApp.Views;
 
 class Program
 {
@@ -41,6 +41,6 @@ class Program
 
 
 
-        await UserInterface.PrintSelectionMainMenu();
+        await Menus.PrintSelectionMainMenu();
     }
 }

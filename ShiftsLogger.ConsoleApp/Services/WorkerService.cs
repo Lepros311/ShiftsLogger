@@ -1,5 +1,4 @@
-﻿using Azure;
-using ShiftsLogger.ConsoleApp.Models;
+﻿using ShiftsLogger.ConsoleApp.Models;
 using System.Text.Json;
 
 namespace ShiftsLogger.ConsoleApp.Services;

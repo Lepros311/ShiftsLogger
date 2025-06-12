@@ -19,18 +19,14 @@ public class ShiftService
 
     public async Task<List<ShiftDto>> GetShiftsAsync()
     {
-        var httpClient = new HttpClient();
-        httpClient.BaseAddress = new Uri("https://localhost:7150");
-        var response = await httpClient.GetAsync("/api/Shifts");
+        var response = await _httpClient.GetAsync("/api/Shifts");
         var shifts = await response.Content.ReadFromJsonAsync<List<ShiftDto>>();
         return shifts;
     }
 
     public async Task<ShiftDto> GetShiftAsync(int shiftId)
     {
-        var httpClient = new HttpClient();
-        httpClient.BaseAddress = new Uri("https://localhost:7150");
-        var response = await httpClient.GetAsync($"/api/Shifts/{shiftId}");
+        var response = await _httpClient.GetAsync($"/api/Shifts/{shiftId}");
         var shift = await response.Content.ReadFromJsonAsync<ShiftDto>();
         return shift;
     }

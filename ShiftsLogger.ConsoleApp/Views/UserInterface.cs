@@ -58,8 +58,8 @@ public class UserInterface
 
     public string ReadString(string question, string currentValue)
     {
-        Console.WriteLine("Current Value: " + currentValue);
-        Console.WriteLine(question);
+        //Console.WriteLine("Current Value: " + currentValue);
+        AnsiConsole.Ask<string>(question);
         Console.WriteLine("New Value: ");
         var answer = Console.ReadLine();
 

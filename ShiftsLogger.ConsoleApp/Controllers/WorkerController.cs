@@ -55,17 +55,23 @@ internal class WorkerController
         var workerService = new WorkerService(new HttpClient());
         var editWorkers = await workerService.GetWorkersAsync();
         var editWorkersDict = editWorkers.ToDictionary(x => $"{x.FirstName} {x.LastName}, {x.Title}");
-
+        
+        var rule = new Rule("[green]Edit Worker[/]");
+        rule.Justification = Justify.Left;
+        AnsiConsole.Write(rule);
+        
         var selectedEditWorkerOption = userInterface.SelectOption("\nChoose Worker to Edit:", editWorkersDict.Keys);
+        
         var editWorker = editWorkersDict[selectedEditWorkerOption];
-        await ViewWorkers("Edit Worker", editWorker.WorkerId);
-        var editFirstName = userInterface.ReadString("Enter First Name: ", editWorker.FirstName);
-        var editLastName = userInterface.ReadString("Enter Last Name: ", editWorker.LastName);
-        var editTitle = userInterface.ReadString("Enter a Title: ", editWorker.Title);
 
-        editWorker.FirstName = editFirstName;
-        editWorker.LastName = editLastName;
-        editWorker.Title = editTitle;
+        await ViewWorkers("Edit Worker", editWorker.WorkerId);
+
+        Console.WriteLine();
+        editWorker.FirstName = AnsiConsole.Confirm("Update worker's first name?", false) ? AnsiConsole.Ask<string>("Worker's new first name:") : editWorker.FirstName;
+        Console.WriteLine();
+        editWorker.LastName = AnsiConsole.Confirm("Update worker's last name?", false) ? AnsiConsole.Ask<string>("Worker's new last name:") : editWorker.LastName;
+        Console.WriteLine();
+        editWorker.Title = AnsiConsole.Confirm("Update worker's title?", false) ? AnsiConsole.Ask<string>("Worker's new title:") : editWorker.Title;
 
         var editResult = await workerService.UpdateWorker(editWorker);
         if (editResult)
@@ -84,22 +90,31 @@ internal class WorkerController
 
     public static async Task DeleteWorker()
     {
-        await ViewWorkers("Delete Worker");
         var userInterface = new UserInterface(new ShiftService(new HttpClient()), new WorkerService(new HttpClient()));
         var workerService = new WorkerService(new HttpClient());
         var deleteWorkers = await workerService.GetWorkersAsync();
-        var deleteWorkersDict = deleteWorkers.ToDictionary(x => $"{x.WorkerId}. {x.FirstName} {x.LastName}");
-        var selectedDeleteWorkerOption = userInterface.SelectOption("Choose Worker to delete", deleteWorkersDict.Keys);
+        var deleteWorkersDict = deleteWorkers.ToDictionary(x => $"{x.FirstName} {x.LastName}, {x.Title}");
+
+        var rule = new Rule("[green]Delete Worker[/]");
+        rule.Justification = Justify.Left;
+        AnsiConsole.Write(rule);
+
+        var selectedDeleteWorkerOption = userInterface.SelectOption("\nChoose Worker to Delete:", deleteWorkersDict.Keys);
 
         var deleteWorker = deleteWorkersDict[selectedDeleteWorkerOption];
 
-        var deleteAnswer = userInterface.ReadString($"Are you sure you want to delte worker: '{deleteWorker.FirstName} {deleteWorker.LastName}'? Y/N", ["y", "n"]);
-        if (deleteAnswer.ToLower() == "y")
+        await ViewWorkers("Delete Worker", deleteWorker.WorkerId);
+
+        if (AnsiConsole.Confirm($"[yellow]Do you really want to delete {deleteWorker.FirstName} {deleteWorker.LastName}, {deleteWorker.Title}?[/]", false))
         {
             await workerService.DeleteWorker(deleteWorker.WorkerId);
-            Console.Clear();
             await ViewWorkers("Delete Worker");
-            Console.WriteLine("Successfully deleted worker");
+            Console.WriteLine("\nSuccessfully deleted worker");
+        }
+        else
+        {
+            Console.WriteLine("\nContact not deleted.");
+            return;
         }
     }
 }

@@ -15,21 +15,22 @@ public class Display
 
         var table = new Table()
             .Border(TableBorder.Rounded)
-            .AddColumn(new TableColumn("[dodgerblue1]Shift Name[/]"))
-            .AddColumn(new TableColumn("[dodgerblue1]Start Time[/]"))
-            .AddColumn(new TableColumn("[dodgerblue1]End Time[/]"))
-            .AddColumn(new TableColumn("[dodgerblue1]Duration[/]"))
-            .AddColumn(new TableColumn("[dodgerblue1]Worker[/]"));
+            .AddColumn(new TableColumn("[dodgerblue1]Shift[/]"))
+            .AddColumn(new TableColumn("[dodgerblue1]Start Time[/]").RightAligned())
+            .AddColumn(new TableColumn("[dodgerblue1]End Time[/]").RightAligned())
+            .AddColumn(new TableColumn("[dodgerblue1]Duration[/]").RightAligned())
+            .AddColumn(new TableColumn("[dodgerblue1]Worker[/]"))
+            .AddColumn(new TableColumn("[dodgerblue1]Title[/]"));
 
         foreach (ShiftDto shift in shifts)
         {
-            Console.WriteLine($"Debug: {shift.ShiftId}, {shift.ShiftName}, {shift.StartTime}, {shift.EndTime}, {shift.Duration}, {shift.WorkerName}");
-
-            table.AddRow(shift.ShiftName ?? "N/A", 
-                        shift.StartTime.ToString() ?? "N/A", 
-                        shift.EndTime.ToString() ?? "N/A", 
-                        shift.Duration.ToString() ?? "N/A", 
-                        shift.WorkerName ?? "N/A");
+            table.AddRow(shift.ShiftName ?? "N/A",
+                        shift.StartTime.ToString() ?? "N/A",
+                        shift.EndTime.ToString() ?? "N/A",
+                        shift.Duration.ToString("H:mm") ?? "N/A",
+                        shift.WorkerName ?? "N/A",
+                        shift.WorkerTitle ?? "N/A");
+                        
         }
 
         AnsiConsole.Write(table);

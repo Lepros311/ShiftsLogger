@@ -114,8 +114,7 @@ internal class Menus
             switch (shiftsMenuChoice)
             {
                 case "View Shifts":
-                    var shifts = await _shiftService.GetShiftsAsync();
-                    Display.PrintShiftsTable(shifts, "View Shifts");
+                    await ShiftController.ViewShifts("View Shifts");
                     ReturnToPreviousMenu();
                     break;
                 case "Add Shift":

@@ -21,6 +21,15 @@ public class ShiftService
         return shifts;
     }
 
+    public async Task<ShiftDto> GetShiftAsync(int shiftId)
+    {
+        var httpClient = new HttpClient();
+        httpClient.BaseAddress = new Uri("https://localhost:7150");
+        var response = await httpClient.GetAsync($"/api/Shifts/{shiftId}");
+        var shift = await response.Content.ReadFromJsonAsync<ShiftDto>();
+        return shift;
+    }
+
     public async Task<ShiftDto> CreateShiftAsync(ShiftDto newShift)
     {
         var httpClient = new HttpClient();

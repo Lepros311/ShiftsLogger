@@ -9,4 +9,6 @@ public class ShiftDto
     public TimeOnly EndTime { get; set; }
     public TimeOnly Duration { get; set; }
     public string WorkerName { get; set; }
+
+    public string WorkerTitle { get; set; }
 }

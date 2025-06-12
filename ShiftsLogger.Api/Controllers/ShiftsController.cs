@@ -35,7 +35,8 @@ namespace ShiftsLogger.API.Controllers
                         StartTime = s.StartTime,
                         EndTime = s.EndTime,
                         Duration = s.Duration,
-                        WorkerName = s.Worker.FirstName + " " + s.Worker.LastName
+                        WorkerName = s.Worker.FirstName + " " + s.Worker.LastName,
+                        WorkerTitle = s.Worker.Title
                     })
                     .ToListAsync();
 

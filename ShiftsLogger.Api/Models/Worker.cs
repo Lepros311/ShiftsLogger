@@ -15,5 +15,5 @@ public class Worker
     [Required]
     public string Title { get; set; }
 
-    public List<Shift> Shifts { get; set; } = [];
+    //public List<Shift> Shifts { get; set; } = [];
 }

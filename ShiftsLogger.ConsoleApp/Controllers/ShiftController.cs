@@ -50,14 +50,11 @@ internal class ShiftController
         var newShiftWorker = shiftWorkersDict[selectedShiftWorkerOption];
 
 
-
-
-
-
         var shift = new ShiftDto { Date = newDate, ShiftName = newShiftName, StartTime = newStartTime, EndTime = newEndTime,  WorkerName = $"{newShiftWorker.FirstName} {newShiftWorker.LastName}", WorkerTitle = newShiftWorker.Title};
-        var insertResult = await shiftService.InsertShiftAsync(shift);
         try
         {
+            var insertResult = await shiftService.InsertShiftAsync(shift);
+
             Console.Clear();
             await ViewShifts("Create Shift");
             Console.WriteLine("\nSuccessfully saved shift");

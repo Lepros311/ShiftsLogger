@@ -14,7 +14,8 @@ public class ShiftsDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<Shift>().HasOne(s => s.Worker).WithMany(w => w.Shifts).HasForeignKey(s => s.WorkerId);
+        //modelBuilder.Entity<Shift>().HasOne(s => s.Worker).WithMany(w => w.Shifts).HasForeignKey(s => s.WorkerId);
+        modelBuilder.Entity<Shift>().HasOne(s => s.Worker).WithMany().HasForeignKey(s => s.WorkerId);
 
         modelBuilder.Entity<Shift>()
             .Property(s => s.StartTime)

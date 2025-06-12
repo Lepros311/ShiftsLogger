@@ -12,5 +12,5 @@ public class WorkerDto
 
     public string Title { get; set; }
 
-    public List<Shift> Shifts { get; set; }
+    //public List<Shift> Shifts { get; set; }
 }

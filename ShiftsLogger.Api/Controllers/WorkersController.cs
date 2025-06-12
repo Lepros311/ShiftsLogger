@@ -20,7 +20,8 @@ public class WorkersController : ControllerBase
     [HttpGet]
     public List<Worker> GetWorkersWithShifts()
     {
-        List<Worker> workers = _context.Workers.Include(x => x.Shifts).ToList();
+        //List<Worker> workers = _context.Workers.Include(x => x.Shifts).ToList();
+        List<Worker> workers = _context.Workers.ToList();
         return workers;
     }
 

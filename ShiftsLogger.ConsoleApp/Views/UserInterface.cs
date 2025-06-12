@@ -58,7 +58,6 @@ public class UserInterface
 
     public string ReadString(string question, string currentValue)
     {
-        //Console.WriteLine("Current Value: " + currentValue);
         AnsiConsole.Ask<string>(question);
         Console.WriteLine("New Value: ");
         var answer = Console.ReadLine();
@@ -70,6 +69,41 @@ public class UserInterface
 
         return answer;
     }
+
+    public TimeOnly PromptForTime(string promptText)
+    {
+        TimeOnly? time;
+        do
+        {
+            Console.Write($"\nEnter the {promptText} time (hh:mm am/pm): ");
+            string? timeInput = Console.ReadLine();
+            time = Validation.ValidateTime(timeInput);
+            if (time == null)
+            {
+                Console.WriteLine("Invalid time format. Please enter a time in the format hh:mm am/pm.");
+            }
+        } while (time == null);
+
+        return time.Value;
+    }
+
+    public DateOnly PromptForDate()
+    {
+        DateOnly? date;
+        do
+        {
+            Console.Write("\nEnter the date (mm/dd/yyyy): ");
+            string? dateInput = Console.ReadLine();
+            date = Validation.ValidateDate(dateInput!);
+            if (date == null)
+            {
+                Console.WriteLine("Invalid date format. Please enter a date in the format mm/dd/yyyy.");
+            }
+        } while (date == null);
+
+        return date.Value;
+    }
+
 
     public string SelectOption(string title, IEnumerable<string> choices)
     {

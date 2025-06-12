@@ -30,7 +30,7 @@ public class ShiftService
         return shift;
     }
 
-    public async Task<ShiftDto> CreateShiftAsync(ShiftDto newShift)
+    public async Task<ShiftDto> InsertShiftAsync(ShiftDto newShift)
     {
         var httpClient = new HttpClient();
         httpClient.BaseAddress = new Uri("https://localhost:7150");

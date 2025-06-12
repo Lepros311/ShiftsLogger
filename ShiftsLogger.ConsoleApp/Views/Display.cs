@@ -15,6 +15,7 @@ public class Display
 
         var table = new Table()
             .Border(TableBorder.Rounded)
+            .AddColumn(new TableColumn("[dodgerblue1]Date[/]"))
             .AddColumn(new TableColumn("[dodgerblue1]Shift[/]"))
             .AddColumn(new TableColumn("[dodgerblue1]Start Time[/]").RightAligned())
             .AddColumn(new TableColumn("[dodgerblue1]End Time[/]").RightAligned())
@@ -22,11 +23,14 @@ public class Display
             .AddColumn(new TableColumn("[dodgerblue1]Worker[/]"))
             .AddColumn(new TableColumn("[dodgerblue1]Title[/]"));
 
-        foreach (ShiftDto shift in shifts)
+        var sortedShifts = shifts.OrderByDescending(s => s.Date).ToList();
+
+        foreach (ShiftDto shift in sortedShifts)
         {
-            table.AddRow(shift.ShiftName ?? "N/A",
-                        shift.StartTime.ToString() ?? "N/A",
-                        shift.EndTime.ToString() ?? "N/A",
+            table.AddRow(shift.Date.ToString() ?? "N/A",
+                        shift.ShiftName ?? "N/A",
+                        shift.StartTime.ToString("h:mm tt") ?? "N/A",
+                        shift.EndTime.ToString("h:mm tt") ?? "N/A",
                         shift.Duration.ToString("H:mm") ?? "N/A",
                         shift.WorkerName ?? "N/A",
                         shift.WorkerTitle ?? "N/A");

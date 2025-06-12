@@ -118,8 +118,7 @@ internal class Menus
                     ReturnToPreviousMenu();
                     break;
                 case "Add Shift":
-                    ShiftDto shift = await userInterface.PromptForNewShift();
-                    await _shiftService.CreateShiftAsync(shift);
+                    await ShiftController.CreateShift();
                     ReturnToPreviousMenu();
                     break;
                 //case "Edit Shift":

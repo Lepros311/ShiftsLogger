@@ -23,7 +23,7 @@ public class Display
             .AddColumn(new TableColumn("[dodgerblue1]Worker[/]"))
             .AddColumn(new TableColumn("[dodgerblue1]Title[/]"));
 
-        var sortedShifts = shifts.OrderByDescending(s => s.Date).ToList();
+        var sortedShifts = shifts.OrderByDescending(s => s.Date).ThenByDescending(s => s.StartTime).ToList();
 
         foreach (ShiftDto shift in sortedShifts)
         {
@@ -32,9 +32,8 @@ public class Display
                         shift.StartTime.ToString("h:mm tt") ?? "N/A",
                         shift.EndTime.ToString("h:mm tt") ?? "N/A",
                         shift.Duration.ToString("H:mm") ?? "N/A",
-                        shift.WorkerName ?? "N/A",
-                        shift.WorkerTitle ?? "N/A");
-                        
+                        ($"{shift.Worker.FirstName} {shift.Worker.LastName}") ?? "N/A",
+                        shift.Worker.Title ?? "N/A");
         }
 
         AnsiConsole.Write(table);

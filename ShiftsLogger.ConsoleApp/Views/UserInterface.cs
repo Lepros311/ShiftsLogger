@@ -105,15 +105,30 @@ public class UserInterface
     }
 
 
-    public string SelectOption(string title, IEnumerable<string> choices)
+    public WorkerDto SelectWorker(string title, List<WorkerDto> choices)
     {
+        var formattedChoices = choices.Select(c => $"{c.FirstName} {c.LastName}, {c.Title}").ToList();
+
         var option = AnsiConsole.Prompt(
                 new SelectionPrompt<string>()
                 .Title(title)
                 .PageSize(10)
-                .AddChoices(choices));
+                .AddChoices(formattedChoices));
 
-        return option;
+        return choices.First(c => $"{c.FirstName} {c.LastName}, {c.Title}" == option);
+    }
+
+    public ShiftDto SelectShift(string title, List<ShiftDto> choices)
+    {
+        var formattedChoices = choices.Select(c => $"{c.Date} {c.ShiftName} {c.StartTime} {c.EndTime} {c.Duration} - {c.Worker.ToString()}").ToList();
+
+        var option = AnsiConsole.Prompt(
+                new SelectionPrompt<string>()
+                .Title(title)
+                .PageSize(10)
+                .AddChoices(formattedChoices));
+
+        return choices.First(c => $"{c.Date} {c.ShiftName} {c.StartTime} {c.EndTime} {c.Duration} - {c.Worker.ToString()}" == option);
     }
 
 

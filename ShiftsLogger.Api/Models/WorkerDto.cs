@@ -1,6 +1,6 @@
 ﻿using ShiftsLogger.API.Models;
 
-namespace ShiftsLogger.Api.Models;
+namespace ShiftsLogger.API.Models;
 
 public class WorkerDto
 {
@@ -12,5 +12,4 @@ public class WorkerDto
 
     public string Title { get; set; }
 
-    //public List<Shift> Shifts { get; set; }
 }

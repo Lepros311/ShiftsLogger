@@ -45,12 +45,9 @@ internal class ShiftController
         var shiftWorkers = await workerService.GetWorkersAsync();
         var shiftWorkersDict = shiftWorkers.ToDictionary(x => $"{x.FirstName} {x.LastName}, {x.Title}");
 
-        var selectedShiftWorkerOption = userInterface.SelectOption("\nChoose Worker for Shift:", shiftWorkersDict.Keys);
+        var newShiftWorker = userInterface.SelectWorker("\nChoose Worker for Shift:", shiftWorkers);
 
-        var newShiftWorker = shiftWorkersDict[selectedShiftWorkerOption];
-
-
-        var shift = new ShiftDto { Date = newDate, ShiftName = newShiftName, StartTime = newStartTime, EndTime = newEndTime,  WorkerName = $"{newShiftWorker.FirstName} {newShiftWorker.LastName}", WorkerTitle = newShiftWorker.Title};
+        var shift = new ShiftDto { Date = newDate, ShiftName = newShiftName, StartTime = newStartTime, EndTime = newEndTime, WorkerId = newShiftWorker.WorkerId, Worker = newShiftWorker};
         try
         {
             var insertResult = await shiftService.InsertShiftAsync(shift);
@@ -64,6 +61,50 @@ internal class ShiftController
             Console.Clear();
             await ViewShifts("Create Shift");
             Console.WriteLine($"\nFailed to save shift. Request error: {e.Message}");
+        }
+    }
+
+    public static async Task EditShift()
+    {
+        var userInterface = new UserInterface(new ShiftService(new HttpClient()), new WorkerService(new HttpClient()));
+        var shiftService = new ShiftService(new HttpClient());
+        var editShifts = await shiftService.GetShiftsAsync();
+        var editShiftsDict = editShifts.ToDictionary(x => $"{x.Date} {x.ShiftName} {x.StartTime} {x.EndTime} {x.Duration} - {x.Worker.ToString()}");
+
+        var rule = new Rule("[green]Edit Shift[/]");
+        rule.Justification = Justify.Left;
+        AnsiConsole.Write(rule);
+
+        var editShift = userInterface.SelectShift("\nChoose Shift to Edit:", editShifts);
+
+        await ViewShifts("Edit Shift", editShift.ShiftId);
+
+        Console.WriteLine();
+        editShift.Date = AnsiConsole.Confirm("Update shift's date?", false) ? AnsiConsole.Ask<DateOnly>("Worker's new first name:") : editShift.Date;
+        Console.WriteLine();
+        editShift.ShiftName = AnsiConsole.Confirm("Update shift name?", false) ? AnsiConsole.Ask<string>("Worker's new last name:") : editShift.ShiftName;
+        Console.WriteLine();
+        editShift.StartTime = AnsiConsole.Confirm("Update shift's start time?", false) ? AnsiConsole.Ask<TimeOnly>("Worker's new title:") : editShift.StartTime;
+        Console.WriteLine();
+        editShift.EndTime = AnsiConsole.Confirm("Update shift's end time?", false) ? AnsiConsole.Ask<TimeOnly>("Worker's new title:") : editShift.EndTime;
+        Console.WriteLine();
+        var workerService = new WorkerService(new HttpClient());
+        var shiftWorkers = await workerService.GetWorkersAsync();
+        editShift.Worker = AnsiConsole.Confirm("Update shift's worker?", false) ? userInterface.SelectWorker("\nChoose Worker for Shift:", shiftWorkers) : editShift.Worker;
+
+        try
+        {
+            var editResult = await shiftService.UpdateShift(editShift);
+
+            Console.Clear();
+            await ViewShifts("Edit Worker");
+            Console.WriteLine("\nSuccessfully edited shift");
+        }
+        catch (HttpRequestException e)
+        {
+            Console.Clear();
+            await ViewShifts("Edit Worker");
+            Console.WriteLine($"\nFailed to edit shift. Request error: {e. Message}");
         }
     }
 }

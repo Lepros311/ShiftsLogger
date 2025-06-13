@@ -1,8 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using ShiftsLogger.Api.Models;
-using ShiftsLogger.API.Data;
 using ShiftsLogger.API.Models;
+using ShiftsLogger.API.Data;
 using ShiftsLogger.API.Services;
 
 namespace ShiftsLogger.API.Controllers
@@ -35,8 +34,7 @@ namespace ShiftsLogger.API.Controllers
                         StartTime = s.StartTime,
                         EndTime = s.EndTime,
                         Duration = s.Duration,
-                        WorkerName = s.Worker.FirstName + " " + s.Worker.LastName,
-                        WorkerTitle = s.Worker.Title
+                        Worker = s.Worker
                     })
                     .ToListAsync();
 
@@ -63,7 +61,7 @@ namespace ShiftsLogger.API.Controllers
                     StartTime = s.StartTime,
                     EndTime = s.EndTime,
                     Duration = s.Duration,
-                    WorkerName = s.Worker.FirstName + " " + s.Worker.LastName
+                    Worker = s.Worker
                 })
                 .FirstOrDefaultAsync();
 
@@ -109,17 +107,18 @@ namespace ShiftsLogger.API.Controllers
         // POST: api/Shifts
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Shift>> PostShift(ShiftDto shiftDto)
+        public async Task<IActionResult> PostShift([FromBody] ShiftDto shiftDto)
         {
-            var worker = await _context.Workers
-                .Where(w => (w.FirstName + " " + w.LastName) == shiftDto.WorkerName)
-                .Select(w => new WorkerDto
-                {
-                    WorkerId = w.WorkerId,
-                    FirstName = w.FirstName,
-                    LastName = w.LastName
-                })
-                .FirstOrDefaultAsync();
+            if (shiftDto == null)
+            {
+                return BadRequest("Shift data is required.");
+            }
+            // Check if the worker exists and retrieve the Worker object
+            var worker = await _context.Workers.FindAsync(shiftDto.WorkerId);
+            if (worker == null)
+            {
+                return NotFound("The specified worker does not exist.");
+            }
 
             Shift shift = new Shift
             {
@@ -129,11 +128,14 @@ namespace ShiftsLogger.API.Controllers
                 EndTime = shiftDto.EndTime,
                 Duration = shiftDto.Duration,
                 WorkerId = worker.WorkerId,
-                //Worker = worker
+                Worker = worker
             };
 
-            ShiftService shiftService = new ShiftService(_context);
-            shiftService.CreateShift(shift);
+            //ShiftService shiftService = new ShiftService(_context);
+            //shiftService.CreateShift(shift);
+
+            _context.Shifts.Add(shift);
+            await _context.SaveChangesAsync();
 
             return CreatedAtAction("GetShift", new { id = shift.ShiftId }, shift);
         }

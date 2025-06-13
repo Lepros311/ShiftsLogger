@@ -60,10 +60,8 @@ internal class WorkerController
         rule.Justification = Justify.Left;
         AnsiConsole.Write(rule);
         
-        var selectedEditWorkerOption = userInterface.SelectOption("\nChoose Worker to Edit:", editWorkersDict.Keys);
+        var editWorker = userInterface.SelectWorker("\nChoose Worker to Edit:", editWorkers);
         
-        var editWorker = editWorkersDict[selectedEditWorkerOption];
-
         await ViewWorkers("Edit Worker", editWorker.WorkerId);
 
         Console.WriteLine();
@@ -99,9 +97,7 @@ internal class WorkerController
         rule.Justification = Justify.Left;
         AnsiConsole.Write(rule);
 
-        var selectedDeleteWorkerOption = userInterface.SelectOption("\nChoose Worker to Delete:", deleteWorkersDict.Keys);
-
-        var deleteWorker = deleteWorkersDict[selectedDeleteWorkerOption];
+        var deleteWorker = userInterface.SelectWorker("\nChoose Worker to Delete:", deleteWorkers);
 
         await ViewWorkers("Delete Worker", deleteWorker.WorkerId);
 

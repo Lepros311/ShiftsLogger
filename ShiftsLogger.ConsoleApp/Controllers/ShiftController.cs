@@ -107,4 +107,31 @@ internal class ShiftController
             Console.WriteLine($"\nFailed to edit shift. Request error: {e. Message}");
         }
     }
+
+    public static async Task DeleteShift()
+    {
+        var userInterface = new UserInterface(new ShiftService(new HttpClient()), new WorkerService(new HttpClient()));
+        var shiftService = new ShiftService(new HttpClient());
+        var deleteShifts = await shiftService.GetShiftsAsync();
+
+        var rule = new Rule("[green]Delete Shift[/]");
+        rule.Justification = Justify.Left;
+        AnsiConsole.Write(rule);
+
+        var deleteShift = userInterface.SelectShift("\nChoose Shift to Delete:", deleteShifts);
+
+        await ViewShifts("Delete Shift", deleteShift.ShiftId);
+
+        if (AnsiConsole.Confirm("[yellow]Do you really want to delete this shift?[/]", false))
+        {
+            await shiftService.DeleteShift(deleteShift.ShiftId);
+            await ViewShifts("Delete Shift");
+            Console.WriteLine("\nSuccessfully deleted shift");
+        }
+        else
+        {
+            Console.WriteLine("\nShift not deleted.");
+            return;
+        }
+    }
 }

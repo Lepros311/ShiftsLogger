@@ -108,7 +108,7 @@ internal class WorkerController
         }
         else
         {
-            Console.WriteLine("\nContact not deleted.");
+            Console.WriteLine("\nWorker not deleted.");
             return;
         }
     }

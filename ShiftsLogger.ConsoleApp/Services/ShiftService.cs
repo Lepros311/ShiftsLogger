@@ -46,4 +46,9 @@ public class ShiftService
         var response = await _httpClient.PutAsync($"Shifts/{shift.ShiftId}", content);
         return response.IsSuccessStatusCode;
     }
+
+    public async Task DeleteShift(int shiftId)
+    {
+        await _httpClient.DeleteAsync($"Shifts/{shiftId}");
+    }
 }

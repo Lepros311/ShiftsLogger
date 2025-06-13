@@ -76,24 +76,40 @@ namespace ShiftsLogger.API.Controllers
         // PUT: api/Shifts/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutShift(int id, Shift shift)
+        public async Task<IActionResult> PutShift(int id, [FromBody] ShiftDto shiftDto)
         {
-            if (id != shift.ShiftId)
+            if (shiftDto == null || id != shiftDto.ShiftId)
             {
-                return BadRequest();
+                return BadRequest("Invalid shift data.");
             }
 
+            // Retrieve the existing shift
             var existingShift = await _context.Shifts.FindAsync(id);
             if (existingShift == null)
             {
-                return NotFound();
+                return NotFound("Shift not found.");
             }
 
-            _context.Entry(existingShift).CurrentValues.SetValues(shift);
+            // Retrieve the worker (same as in POST)
+            var worker = await _context.Workers.FindAsync(shiftDto.WorkerId);
+            if (worker == null)
+            {
+                return NotFound("The specified worker does not exist.");
+            }
+
+            // Update the existing shift's properties
+            existingShift.ShiftName = shiftDto.ShiftName;
+            existingShift.Date = shiftDto.Date;
+            existingShift.StartTime = shiftDto.StartTime;
+            existingShift.EndTime = shiftDto.EndTime;
+            existingShift.Duration = shiftDto.Duration;
+            existingShift.WorkerId = worker.WorkerId;
+            existingShift.Worker = worker;
 
             try
             {
                 await _context.SaveChangesAsync();
+                return NoContent();
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -106,9 +122,8 @@ namespace ShiftsLogger.API.Controllers
                     throw;
                 }
             }
-
-            return NoContent();
         }
+
 
         // POST: api/Shifts
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754

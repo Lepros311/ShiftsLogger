@@ -43,7 +43,7 @@ public class ShiftService
     {
         var json = JsonSerializer.Serialize(shift);
         var content = new StringContent(json, System.Text.Encoding.UTF8, "application/json");
-        var response = await _httpClient.PutAsync($"Workers/{shift.ShiftId}", content);
+        var response = await _httpClient.PutAsync($"Shifts/{shift.ShiftId}", content);
         return response.IsSuccessStatusCode;
     }
 }

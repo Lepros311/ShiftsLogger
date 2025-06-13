@@ -120,7 +120,12 @@ public class UserInterface
 
     public ShiftDto SelectShift(string title, List<ShiftDto> choices)
     {
-        var formattedChoices = choices.Select(c => $"{c.Date} {c.ShiftName} {c.StartTime} {c.EndTime} {c.Duration} - {c.Worker.ToString()}").ToList();
+        var sortedChoices = choices
+        .OrderByDescending(c => c.Date)      // Primary sort: Date descending
+        .ThenByDescending(c => c.StartTime)  // Secondary sort: StartTime descending
+        .ToList();
+
+        var formattedChoices = sortedChoices.Select(c => $"{c.Date} {c.ShiftName} {c.StartTime} {c.EndTime} {c.Duration} - {c.Worker.ToString()}").ToList();
 
         var option = AnsiConsole.Prompt(
                 new SelectionPrompt<string>()

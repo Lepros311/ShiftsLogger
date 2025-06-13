@@ -121,10 +121,10 @@ internal class Menus
                     await ShiftController.CreateShift();
                     ReturnToPreviousMenu();
                     break;
-                //case "Edit Shift":
-                //    _shiftService.UpdateShift();
-                //    ReturnToPreviousMenu();
-                //    break;
+                case "Edit Shift":
+                    await ShiftController.EditShift();
+                    ReturnToPreviousMenu();
+                    break;
                 //case "Delete Shift":
                 //    _shiftService.DeleteShift();
                 //    ReturnToPreviousMenu();

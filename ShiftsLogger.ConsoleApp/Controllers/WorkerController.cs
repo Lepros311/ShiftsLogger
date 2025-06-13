@@ -54,7 +54,6 @@ internal class WorkerController
         var userInterface = new UserInterface(new ShiftService(new HttpClient()), new WorkerService(new HttpClient()));
         var workerService = new WorkerService(new HttpClient());
         var editWorkers = await workerService.GetWorkersAsync();
-        var editWorkersDict = editWorkers.ToDictionary(x => $"{x.FirstName} {x.LastName}, {x.Title}");
         
         var rule = new Rule("[green]Edit Worker[/]");
         rule.Justification = Justify.Left;

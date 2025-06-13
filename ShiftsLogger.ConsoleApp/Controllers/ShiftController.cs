@@ -69,7 +69,6 @@ internal class ShiftController
         var userInterface = new UserInterface(new ShiftService(new HttpClient()), new WorkerService(new HttpClient()));
         var shiftService = new ShiftService(new HttpClient());
         var editShifts = await shiftService.GetShiftsAsync();
-        var editShiftsDict = editShifts.ToDictionary(x => $"{x.Date} {x.ShiftName} {x.StartTime} {x.EndTime} {x.Duration} - {x.Worker.ToString()}");
 
         var rule = new Rule("[green]Edit Shift[/]");
         rule.Justification = Justify.Left;
@@ -80,17 +79,18 @@ internal class ShiftController
         await ViewShifts("Edit Shift", editShift.ShiftId);
 
         Console.WriteLine();
-        editShift.Date = AnsiConsole.Confirm("Update shift's date?", false) ? AnsiConsole.Ask<DateOnly>("Worker's new first name:") : editShift.Date;
+        editShift.Date = AnsiConsole.Confirm("Update shift's date?", false) ? AnsiConsole.Ask<DateOnly>("Shift's new date:") : editShift.Date;
         Console.WriteLine();
-        editShift.ShiftName = AnsiConsole.Confirm("Update shift name?", false) ? AnsiConsole.Ask<string>("Worker's new last name:") : editShift.ShiftName;
+        editShift.ShiftName = AnsiConsole.Confirm("Update shift name?", false) ? AnsiConsole.Ask<string>("Shifts's new  name:") : editShift.ShiftName;
         Console.WriteLine();
-        editShift.StartTime = AnsiConsole.Confirm("Update shift's start time?", false) ? AnsiConsole.Ask<TimeOnly>("Worker's new title:") : editShift.StartTime;
+        editShift.StartTime = AnsiConsole.Confirm("Update shift's start time?", false) ? AnsiConsole.Ask<TimeOnly>("Shift's new start time:") : editShift.StartTime;
         Console.WriteLine();
-        editShift.EndTime = AnsiConsole.Confirm("Update shift's end time?", false) ? AnsiConsole.Ask<TimeOnly>("Worker's new title:") : editShift.EndTime;
+        editShift.EndTime = AnsiConsole.Confirm("Update shift's end time?", false) ? AnsiConsole.Ask<TimeOnly>("Shift's new end time:") : editShift.EndTime;
         Console.WriteLine();
         var workerService = new WorkerService(new HttpClient());
         var shiftWorkers = await workerService.GetWorkersAsync();
         editShift.Worker = AnsiConsole.Confirm("Update shift's worker?", false) ? userInterface.SelectWorker("\nChoose Worker for Shift:", shiftWorkers) : editShift.Worker;
+        editShift.WorkerId = editShift.Worker.WorkerId;
 
         try
         {

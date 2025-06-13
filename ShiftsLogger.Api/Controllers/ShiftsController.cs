@@ -83,7 +83,13 @@ namespace ShiftsLogger.API.Controllers
                 return BadRequest();
             }
 
-            _context.Entry(shift).State = EntityState.Modified;
+            var existingShift = await _context.Shifts.FindAsync(id);
+            if (existingShift == null)
+            {
+                return NotFound();
+            }
+
+            _context.Entry(existingShift).CurrentValues.SetValues(shift);
 
             try
             {
@@ -130,9 +136,6 @@ namespace ShiftsLogger.API.Controllers
                 WorkerId = worker.WorkerId,
                 Worker = worker
             };
-
-            //ShiftService shiftService = new ShiftService(_context);
-            //shiftService.CreateShift(shift);
 
             _context.Shifts.Add(shift);
             await _context.SaveChangesAsync();

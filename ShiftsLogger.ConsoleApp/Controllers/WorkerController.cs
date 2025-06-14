@@ -10,16 +10,32 @@ internal class WorkerController
     public static async Task ViewWorkers(string heading, int? workerId = null)
     {
         var workerService = new WorkerService(new HttpClient());
-        List<WorkerDto> viewWorkers;
+        List<WorkerDto> viewWorkers = new List<WorkerDto>();
+
         if (workerId.HasValue)
         {
-            var worker = await workerService.GetWorkerAsync(workerId.Value);
-            viewWorkers = worker is not null ? new List<WorkerDto> { worker } : new List<WorkerDto>();
-            
+            try
+            {
+                var worker = await workerService.GetWorkerAsync(workerId.Value);
+                viewWorkers = worker is not null ? new List<WorkerDto> { worker } : new List<WorkerDto>();
+            }
+            catch (HttpRequestException e)
+            {
+                Console.Clear();
+                Console.WriteLine($"\nFailed to retrieve worker with ID {workerId.Value}. Request error: {e.Message}");
+            }
         }
         else
         {
-            viewWorkers = await workerService.GetWorkersAsync();
+            try
+            {
+                viewWorkers = await workerService.GetWorkersAsync();
+            }
+            catch (HttpRequestException e)
+            {
+                Console.Clear();
+                Console.WriteLine("\nFailed to retrieve workers. Request error: " + e.Message);
+            }
         }
 
         Display.PrintWorkersTable(viewWorkers, heading);
@@ -27,24 +43,57 @@ internal class WorkerController
 
     public static async Task CreateWorker()
     {
-        await ViewWorkers("Add Worker");
+        try
+        {
+            await ViewWorkers("Add Worker");
+        }
+        catch (HttpRequestException e)
+        {
+            Console.Clear();
+            Console.WriteLine($"\nFailed to retrieve workers before creating a new one. Request error: {e.Message}");
+            return; // Exit early if workers can't be retrieved
+        }
         var userInterface = new UserInterface(new ShiftService(new HttpClient()), new WorkerService(new HttpClient()));
         var workerService = new WorkerService(new HttpClient());
-        var newFirstName = userInterface.ReadString("Enter First Name: ");
+        var newFirstName = userInterface.ReadString("\nEnter First Name: ");
         var newLastName = userInterface.ReadString("Enter Last Name: ");
         var newTitle = userInterface.ReadString("Enter a Title: ");
         var worker = new WorkerDto { Title = newTitle, FirstName = newFirstName, LastName = newLastName };
-        var insertResult = await workerService.InsertWorker(worker);
         try
         {
+            var insertResult = await workerService.InsertWorker(worker);
+
             Console.Clear();
-            await ViewWorkers("Create Worker");
-            Console.WriteLine("\nSuccessfully saved worker");
+            try
+            {
+                await ViewWorkers("Create Worker");
+            }
+            catch (HttpRequestException e)
+            {
+                Console.WriteLine($"\nFailed to refresh worker list after creation. Request error: {e.Message}");
+            }
+
+            if (insertResult)
+            {
+                Console.WriteLine("\nSuccessfully saved worker");
+            }
+            else
+            {
+                Console.WriteLine("\nFailed to save worker. No exception was thrown, but the request was unsuccessful.");
+            }
         }
-        catch (HttpRequestException e) 
+        catch (HttpRequestException e)
         {
             Console.Clear();
-            await ViewWorkers("Create Worker");
+            try
+            {
+                await ViewWorkers("Create Worker");
+            }
+            catch (HttpRequestException viewError)
+            {
+                Console.WriteLine($"\nFailed to refresh worker list after failed creation. Request error: {viewError.Message}");
+            }
+
             Console.WriteLine($"\nFailed to save worker. Request error: {e.Message}");
         }
     }
@@ -53,16 +102,34 @@ internal class WorkerController
     {
         var userInterface = new UserInterface(new ShiftService(new HttpClient()), new WorkerService(new HttpClient()));
         var workerService = new WorkerService(new HttpClient());
-        var editWorkers = await workerService.GetWorkersAsync();
-        
+
+        List<WorkerDto> editWorkers = new List<WorkerDto>();
+        try
+        {
+            editWorkers = await workerService.GetWorkersAsync();
+        }
+        catch (HttpRequestException e)
+        {
+            Console.Clear();
+            Console.WriteLine($"\nFailed to retrieve workers. Request error: {e.Message}");
+            return; // Exit early if workers can't be retrieved
+        }
         var rule = new Rule("[green]Edit Worker[/]");
         rule.Justification = Justify.Left;
         AnsiConsole.Write(rule);
         
         var editWorker = userInterface.SelectWorker("\nChoose Worker to Edit:", editWorkers);
-        
-        await ViewWorkers("Edit Worker", editWorker.WorkerId);
 
+        try
+        {
+            await ViewWorkers("Edit Worker", editWorker.WorkerId);
+        }
+        catch (HttpRequestException e)
+        {
+            Console.Clear();
+            Console.WriteLine($"\nFailed to retrieve worker details. Request error: {e.Message}");
+            return; // Exit early if worker details can't be retrieved
+        }
         Console.WriteLine();
         editWorker.FirstName = AnsiConsole.Confirm("Update worker's first name?", false) ? AnsiConsole.Ask<string>("Worker's new first name:") : editWorker.FirstName;
         Console.WriteLine();
@@ -70,18 +137,26 @@ internal class WorkerController
         Console.WriteLine();
         editWorker.Title = AnsiConsole.Confirm("Update worker's title?", false) ? AnsiConsole.Ask<string>("Worker's new title:") : editWorker.Title;
 
-        var editResult = await workerService.UpdateWorker(editWorker);
-        if (editResult)
+        try
         {
+            var editResult = await workerService.UpdateWorker(editWorker);
             Console.Clear();
             await ViewWorkers("Edit Worker");
-            Console.WriteLine("\nSuccessfully edited worker");
+
+            if (editResult)
+            {
+                Console.WriteLine("\nSuccessfully edited worker");
+            }
+            else
+            {
+                Console.WriteLine("\nFailed to edit worker");
+            }
         }
-        else
+        catch (HttpRequestException e)
         {
             Console.Clear();
             await ViewWorkers("Edit Worker");
-            Console.WriteLine("\nFailed to edit worker");
+            Console.WriteLine($"\nFailed to update worker. Request error: {e.Message}");
         }
     }
 
@@ -89,7 +164,18 @@ internal class WorkerController
     {
         var userInterface = new UserInterface(new ShiftService(new HttpClient()), new WorkerService(new HttpClient()));
         var workerService = new WorkerService(new HttpClient());
-        var deleteWorkers = await workerService.GetWorkersAsync();
+
+        List<WorkerDto> deleteWorkers = new List<WorkerDto>();
+        try
+        {
+            deleteWorkers = await workerService.GetWorkersAsync();
+        }
+        catch (HttpRequestException e)
+        {
+            Console.Clear();
+            Console.WriteLine($"\nFailed to retrieve workers. Request error: {e.Message}");
+            return; // Exit early if workers can't be retrieved
+        }
         var deleteWorkersDict = deleteWorkers.ToDictionary(x => $"{x.FirstName} {x.LastName}, {x.Title}");
 
         var rule = new Rule("[green]Delete Worker[/]");
@@ -98,18 +184,44 @@ internal class WorkerController
 
         var deleteWorker = userInterface.SelectWorker("\nChoose Worker to Delete:", deleteWorkers);
 
-        await ViewWorkers("Delete Worker", deleteWorker.WorkerId);
+        try
+        {
+            deleteWorkers = await workerService.GetWorkersAsync();
+        }
+        catch (HttpRequestException e)
+        {
+            Console.Clear();
+            Console.WriteLine($"\nFailed to retrieve workers. Request error: {e.Message}");
+            return; // Exit early if workers can't be retrieved
+        }
 
         if (AnsiConsole.Confirm($"[yellow]Do you really want to delete {deleteWorker.FirstName} {deleteWorker.LastName}, {deleteWorker.Title}?[/]", false))
         {
-            await workerService.DeleteWorker(deleteWorker.WorkerId);
-            await ViewWorkers("Delete Worker");
-            Console.WriteLine("\nSuccessfully deleted worker");
+            try
+            {
+                var deleteResult = await workerService.DeleteWorker(deleteWorker.WorkerId);
+                Console.Clear();
+                await ViewWorkers("Delete Worker");
+
+                if (deleteResult)
+                {
+                    Console.WriteLine("\nSuccessfully deleted worker");
+                }
+                else
+                {
+                    Console.WriteLine("\nFailed to delete worker.");
+                }
+            }
+            catch (HttpRequestException e)
+            {
+                Console.Clear();
+                await ViewWorkers("Delete Worker");
+                Console.WriteLine($"\nFailed to delete worker. Request error: {e.Message}");
+            }
         }
         else
         {
             Console.WriteLine("\nWorker not deleted.");
-            return;
         }
     }
 }

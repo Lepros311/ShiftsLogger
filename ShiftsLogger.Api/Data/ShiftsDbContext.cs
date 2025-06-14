@@ -82,7 +82,7 @@ public class ShiftsDbContext : DbContext
                     ShiftId = 1,
                     WorkerId = 1,
                     ShiftName = "1st",
-                    Date = DateOnly.FromDateTime(new DateTime(2023, 10, 15)),
+                    Date = DateOnly.FromDateTime(new DateTime(2025, 06, 15)),
                     StartTime = TimeOnly.Parse("08:00"),
                     EndTime = TimeOnly.Parse("16:00")
                 },
@@ -91,7 +91,7 @@ public class ShiftsDbContext : DbContext
                     ShiftId = 2,
                     WorkerId = 1,
                     ShiftName = "2nd",
-                    Date = DateOnly.FromDateTime(new DateTime(2023, 10, 15)),
+                    Date = DateOnly.FromDateTime(new DateTime(2025, 06, 15)),
                     StartTime = TimeOnly.Parse("16:00"),
                     EndTime = TimeOnly.Parse("00:00")
                 },
@@ -100,7 +100,7 @@ public class ShiftsDbContext : DbContext
                     ShiftId = 3,
                     WorkerId = 2,
                     ShiftName = "2nd",
-                    Date = DateOnly.FromDateTime(new DateTime(2023, 10, 15)),
+                    Date = DateOnly.FromDateTime(new DateTime(2025, 06, 14)),
                     StartTime = TimeOnly.Parse("16:00"),
                     EndTime = TimeOnly.Parse("00:00")
                 },
@@ -109,7 +109,7 @@ public class ShiftsDbContext : DbContext
                     ShiftId = 4,
                     WorkerId = 2,
                     ShiftName = "3rd",
-                    Date = DateOnly.FromDateTime(new DateTime(2023, 10, 15)),
+                    Date = DateOnly.FromDateTime(new DateTime(2025, 06, 14)),
                     StartTime = TimeOnly.Parse("00:00"),
                     EndTime = TimeOnly.Parse("08:00")
                 },
@@ -118,7 +118,7 @@ public class ShiftsDbContext : DbContext
                     ShiftId = 5,
                     WorkerId = 3,
                     ShiftName = "3rd",
-                    Date = DateOnly.FromDateTime(new DateTime(2023, 10, 15)),
+                    Date = DateOnly.FromDateTime(new DateTime(2025, 06, 13)),
                     StartTime = TimeOnly.Parse("16:00"),
                     EndTime = TimeOnly.Parse("00:00")
                 },
@@ -127,7 +127,7 @@ public class ShiftsDbContext : DbContext
                     ShiftId = 6,
                     WorkerId = 3,
                     ShiftName = "2nd",
-                    Date = DateOnly.FromDateTime(new DateTime(2023, 10, 15)),
+                    Date = DateOnly.FromDateTime(new DateTime(2025, 06, 13)),
                     StartTime = TimeOnly.Parse("16:00"),
                     EndTime = TimeOnly.Parse("00:00")
                 },
@@ -136,7 +136,7 @@ public class ShiftsDbContext : DbContext
                     ShiftId = 7,
                     WorkerId = 4,
                     ShiftName = "1st",
-                    Date = DateOnly.FromDateTime(new DateTime(2023, 10, 15)),
+                    Date = DateOnly.FromDateTime(new DateTime(2025, 06, 14)),
                     StartTime = TimeOnly.Parse("08:00"),
                     EndTime = TimeOnly.Parse("16:00")
                 },
@@ -145,7 +145,7 @@ public class ShiftsDbContext : DbContext
                     ShiftId = 8,
                     WorkerId = 4,
                     ShiftName = "1st",
-                    Date = DateOnly.FromDateTime(new DateTime(2023, 10, 15)),
+                    Date = DateOnly.FromDateTime(new DateTime(2025, 06, 13)),
                     StartTime = TimeOnly.Parse("08:00"),
                     EndTime = TimeOnly.Parse("16:00")
                 }

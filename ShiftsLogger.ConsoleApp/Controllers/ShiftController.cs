@@ -2,7 +2,6 @@
 using ShiftsLogger.ConsoleApp.Services;
 using ShiftsLogger.ConsoleApp.Views;
 using Spectre.Console;
-using System.Globalization;
 
 namespace ShiftsLogger.ConsoleApp.Controllers;
 
@@ -11,16 +10,34 @@ internal class ShiftController
     public static async Task ViewShifts(string heading, int? shiftId = null)
     {
         var shiftService = new ShiftService(new HttpClient());
-        List<ShiftDto> viewShifts;
+        List<ShiftDto> viewShifts = new List<ShiftDto>();
+
         if (shiftId.HasValue)
         {
-            var worker = await shiftService.GetShiftAsync(shiftId.Value);
-            viewShifts = worker is not null ? new List<ShiftDto> { worker } : new List<ShiftDto>();
-
+            try
+            {
+                var shift = await shiftService.GetShiftAsync(shiftId.Value);
+                viewShifts = shift is not null ? new List<ShiftDto> { shift } : new List<ShiftDto>();
+            }
+            catch (HttpRequestException e)
+            {
+                Console.Clear();
+                Console.WriteLine($"\nFailed to retrieve shift with ID {shiftId.Value}. Request error: {e.Message}");
+                return; // Exit early if shift retrieval fails
+            }
         }
         else
         {
-            viewShifts = await shiftService.GetShiftsAsync();
+            try
+            {
+                viewShifts = await shiftService.GetShiftsAsync();
+            }
+            catch (HttpRequestException e)
+            {
+                Console.Clear();
+                Console.WriteLine("\nFailed to retrieve shifts. Request error: " + e.Message);
+                return; // Exit early if shifts retrieval fails
+            }
         }
 
         Display.PrintShiftsTable(viewShifts, heading);
@@ -28,10 +45,19 @@ internal class ShiftController
 
     public static async Task CreateShift()
     {
-        await ViewShifts("Add Worker");
+        try
+        {
+            await ViewShifts("Add Shift");
+        }
+        catch (HttpRequestException e)
+        {
+            Console.Clear();
+            Console.WriteLine($"\nFailed to retrieve shifts before creating a new one. Request error: {e.Message}");
+            return; // Exit early if shifts can't be retrieved
+        }
         var userInterface = new UserInterface(new ShiftService(new HttpClient()), new WorkerService(new HttpClient()));
         var shiftService = new ShiftService(new HttpClient());
-        var newShiftName = userInterface.ReadString("Enter Shift (1st, 2nd, or 3rd): ");
+        var newShiftName = userInterface.ReadString("\nEnter Shift (1st, 2nd, or 3rd): ");
         var newDate = userInterface.PromptForDate();
         var newStartTime = userInterface.PromptForTime("start");
         var newEndTime = userInterface.PromptForTime("end");
@@ -42,24 +68,59 @@ internal class ShiftController
         }
 
         var workerService = new WorkerService(new HttpClient());
-        var shiftWorkers = await workerService.GetWorkersAsync();
-        var shiftWorkersDict = shiftWorkers.ToDictionary(x => $"{x.FirstName} {x.LastName}, {x.Title}");
 
-        var newShiftWorker = userInterface.SelectWorker("\nChoose Worker for Shift:", shiftWorkers);
+        List<WorkerDto> shiftWorkers = new List<WorkerDto>();
 
-        var shift = new ShiftDto { Date = newDate, ShiftName = newShiftName, StartTime = newStartTime, EndTime = newEndTime, WorkerId = newShiftWorker.WorkerId, Worker = newShiftWorker};
         try
         {
-            var insertResult = await shiftService.InsertShiftAsync(shift);
-
-            Console.Clear();
-            await ViewShifts("Create Shift");
-            Console.WriteLine("\nSuccessfully saved shift");
+            shiftWorkers = await workerService.GetWorkersAsync();
         }
         catch (HttpRequestException e)
         {
             Console.Clear();
-            await ViewShifts("Create Shift");
+            Console.WriteLine($"\nFailed to retrieve workers. Request error: {e.Message}");
+            return; // Exit early if workers can't be retrieved
+        }
+        var shiftWorkersDict = shiftWorkers.ToDictionary(x => $"{x.FirstName} {x.LastName}, {x.Title}");
+
+        var newShiftWorker = userInterface.SelectWorker("\nChoose Worker for Shift:", shiftWorkers);
+
+        var shift = new ShiftDto { Date = newDate, ShiftName = newShiftName, StartTime = newStartTime, EndTime = newEndTime, WorkerId = newShiftWorker.WorkerId, Worker = newShiftWorker };
+        try
+        {
+            var insertResult = await shiftService.InsertShiftAsync(shift);
+            Console.Clear();
+
+            try
+            {
+                await ViewShifts("Add Shift");
+            }
+            catch (HttpRequestException e)
+            {
+                Console.WriteLine($"\nFailed to refresh shift list after creation. Request error: {e.Message}");
+            }
+
+            if (insertResult)
+            {
+                Console.WriteLine("\nSuccessfully saved shift");
+            }
+            else
+            {
+                Console.WriteLine("\nFailed to save shift.");
+            }
+        }
+        catch (HttpRequestException e)
+        {
+            Console.Clear();
+            try
+            {
+                await ViewShifts("Add Shift");
+            }
+            catch (HttpRequestException viewError)
+            {
+                Console.WriteLine($"\nFailed to refresh shift list after failed creation. Request error: {viewError.Message}");
+            }
+
             Console.WriteLine($"\nFailed to save shift. Request error: {e.Message}");
         }
     }
@@ -68,16 +129,34 @@ internal class ShiftController
     {
         var userInterface = new UserInterface(new ShiftService(new HttpClient()), new WorkerService(new HttpClient()));
         var shiftService = new ShiftService(new HttpClient());
-        var editShifts = await shiftService.GetShiftsAsync();
+        List<ShiftDto> editShifts = new List<ShiftDto>();
 
+        try
+        {
+            editShifts = await shiftService.GetShiftsAsync();
+        }
+        catch (HttpRequestException e)
+        {
+            Console.Clear();
+            Console.WriteLine($"\nFailed to retrieve shifts. Request error: {e.Message}");
+            return; // Exit early if shifts can't be retrieved
+        }
         var rule = new Rule("[green]Edit Shift[/]");
         rule.Justification = Justify.Left;
         AnsiConsole.Write(rule);
 
         var editShift = userInterface.SelectShift("\nChoose Shift to Edit:", editShifts);
 
-        await ViewShifts("Edit Shift", editShift.ShiftId);
-
+        try
+        {
+            await ViewShifts("Edit Shift", editShift.ShiftId);
+        }
+        catch (HttpRequestException e)
+        {
+            Console.Clear();
+            Console.WriteLine($"\nFailed to retrieve shift details. Request error: {e.Message}");
+            return; // Exit early if shift details can't be retrieved
+        }
         Console.WriteLine();
         editShift.Date = AnsiConsole.Confirm("Update shift's date?", false) ? AnsiConsole.Ask<DateOnly>("Shift's new date:") : editShift.Date;
         Console.WriteLine();
@@ -88,23 +167,41 @@ internal class ShiftController
         editShift.EndTime = AnsiConsole.Confirm("Update shift's end time?", false) ? AnsiConsole.Ask<TimeOnly>("Shift's new end time:") : editShift.EndTime;
         Console.WriteLine();
         var workerService = new WorkerService(new HttpClient());
-        var shiftWorkers = await workerService.GetWorkersAsync();
+        List<WorkerDto> shiftWorkers = new List<WorkerDto>();
+
+        try
+        {
+            shiftWorkers = await workerService.GetWorkersAsync();
+        }
+        catch (HttpRequestException e)
+        {
+            Console.Clear();
+            Console.WriteLine($"\nFailed to retrieve workers. Request error: {e.Message}");
+            return; // Exit early if workers can't be retrieved
+        }
         editShift.Worker = AnsiConsole.Confirm("Update shift's worker?", false) ? userInterface.SelectWorker("\nChoose Worker for Shift:", shiftWorkers) : editShift.Worker;
         editShift.WorkerId = editShift.Worker.WorkerId;
 
         try
         {
             var editResult = await shiftService.UpdateShift(editShift);
-
             Console.Clear();
-            await ViewShifts("Edit Worker");
-            Console.WriteLine("\nSuccessfully edited shift");
+            await ViewShifts("Edit Shift");
+
+            if (editResult)
+            {
+                Console.WriteLine("\nSuccessfully edited shift");
+            }
+            else
+            {
+                Console.WriteLine("\nFailed to edit shift.");
+            }
         }
         catch (HttpRequestException e)
         {
             Console.Clear();
-            await ViewShifts("Edit Worker");
-            Console.WriteLine($"\nFailed to edit shift. Request error: {e. Message}");
+            await ViewShifts("Edit Shift");
+            Console.WriteLine($"\nFailed to update shift. Request error: {e.Message}");
         }
     }
 
@@ -112,26 +209,64 @@ internal class ShiftController
     {
         var userInterface = new UserInterface(new ShiftService(new HttpClient()), new WorkerService(new HttpClient()));
         var shiftService = new ShiftService(new HttpClient());
-        var deleteShifts = await shiftService.GetShiftsAsync();
+        List<ShiftDto> deleteShifts = new List<ShiftDto>();
 
+        try
+        {
+            deleteShifts = await shiftService.GetShiftsAsync();
+        }
+        catch (HttpRequestException e)
+        {
+            Console.Clear();
+            Console.WriteLine($"\nFailed to retrieve shifts. Request error: {e.Message}");
+            return; // Exit early if shifts can't be retrieved
+        }
         var rule = new Rule("[green]Delete Shift[/]");
         rule.Justification = Justify.Left;
         AnsiConsole.Write(rule);
 
         var deleteShift = userInterface.SelectShift("\nChoose Shift to Delete:", deleteShifts);
 
-        await ViewShifts("Delete Shift", deleteShift.ShiftId);
+        try
+        {
+            await ViewShifts("Delete Shift", deleteShift.ShiftId);
+        }
+        catch (HttpRequestException e)
+        {
+            Console.Clear();
+            Console.WriteLine($"\nFailed to retrieve shift details. Request error: {e.Message}");
+            return; // Exit early if shift details can't be retrieved
+        }
+
+        Console.WriteLine();
 
         if (AnsiConsole.Confirm("[yellow]Do you really want to delete this shift?[/]", false))
         {
-            await shiftService.DeleteShift(deleteShift.ShiftId);
-            await ViewShifts("Delete Shift");
-            Console.WriteLine("\nSuccessfully deleted shift");
+            try
+            {
+                var deleteResult = await shiftService.DeleteShift(deleteShift.ShiftId);
+                Console.Clear();
+                await ViewShifts("Delete Shift");
+
+                if (deleteResult)
+                {
+                    Console.WriteLine("\nSuccessfully deleted shift");
+                }
+                else
+                {
+                    Console.WriteLine("\nFailed to delete shift.");
+                }
+            }
+            catch (HttpRequestException e)
+            {
+                Console.Clear();
+                await ViewShifts("Delete Shift");
+                Console.WriteLine($"\nFailed to delete shift. Request error: {e.Message}");
+            }
         }
         else
         {
             Console.WriteLine("\nShift not deleted.");
-            return;
         }
     }
 }

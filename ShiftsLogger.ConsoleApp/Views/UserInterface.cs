@@ -125,7 +125,7 @@ public class UserInterface
         .ThenByDescending(c => c.StartTime)  // Secondary sort: StartTime descending
         .ToList();
 
-        var formattedChoices = sortedChoices.Select(c => $"{c.Date} {c.ShiftName} {c.StartTime} {c.EndTime} {c.Duration} - {c.Worker.ToString()}").ToList();
+        var formattedChoices = sortedChoices.Select(c => $"{c.Date, -12} {c.ShiftName, -5} {c.StartTime, 10} {c.EndTime, 10} {c.Duration.ToString("H:mm"), 8}     {c.Worker.FirstName, -10} {c.Worker.LastName, -15} {c.Worker.Title, -10}").ToList();
 
         var option = AnsiConsole.Prompt(
                 new SelectionPrompt<string>()
@@ -133,7 +133,7 @@ public class UserInterface
                 .PageSize(10)
                 .AddChoices(formattedChoices));
 
-        return choices.First(c => $"{c.Date} {c.ShiftName} {c.StartTime} {c.EndTime} {c.Duration} - {c.Worker.ToString()}" == option);
+        return choices.First(c => $"{c.Date,-12} {c.ShiftName,-5} {c.StartTime,10} {c.EndTime,10} {c.Duration.ToString("H:mm"),8}     {c.Worker.FirstName,-10} {c.Worker.LastName,-15} {c.Worker.Title,-10}" == option);
     }
 
 

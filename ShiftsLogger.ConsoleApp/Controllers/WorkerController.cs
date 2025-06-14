@@ -186,16 +186,18 @@ internal class WorkerController
 
         try
         {
-            deleteWorkers = await workerService.GetWorkersAsync();
+            await ViewWorkers("Delete Worker", deleteWorker.WorkerId);
         }
         catch (HttpRequestException e)
         {
             Console.Clear();
-            Console.WriteLine($"\nFailed to retrieve workers. Request error: {e.Message}");
-            return; // Exit early if workers can't be retrieved
+            Console.WriteLine($"\nFailed to retrieve worker details. Request error: {e.Message}");
+            return; // Exit early if shift details can't be retrieved
         }
 
-        if (AnsiConsole.Confirm($"[yellow]Do you really want to delete {deleteWorker.FirstName} {deleteWorker.LastName}, {deleteWorker.Title}?[/]", false))
+        Console.WriteLine();
+
+        if (AnsiConsole.Confirm("[yellow]Do you really want to delete this worker?[/]", false))
         {
             try
             {

@@ -14,7 +14,6 @@ public class ShiftService
     {
         _httpClient = httpClient;
         _httpClient.BaseAddress = new Uri("https://localhost:7150/api/");
-
     }
 
     public async Task<List<ShiftDto>> GetShiftsAsync()

@@ -66,7 +66,7 @@ internal class WorkerController
             Console.Clear();
             try
             {
-                await ViewWorkers("Create Worker");
+                await ViewWorkers("Add Worker");
             }
             catch (HttpRequestException e)
             {
@@ -75,11 +75,11 @@ internal class WorkerController
 
             if (insertResult)
             {
-                Console.WriteLine("\nSuccessfully saved worker");
+                Console.WriteLine("\nSuccessfully added worker!");
             }
             else
             {
-                Console.WriteLine("\nFailed to save worker. No exception was thrown, but the request was unsuccessful.");
+                Console.WriteLine("\nFailed to add worker. No exception was thrown, but the request was unsuccessful.");
             }
         }
         catch (HttpRequestException e)
@@ -87,14 +87,14 @@ internal class WorkerController
             Console.Clear();
             try
             {
-                await ViewWorkers("Create Worker");
+                await ViewWorkers("Add Worker");
             }
             catch (HttpRequestException viewError)
             {
                 Console.WriteLine($"\nFailed to refresh worker list after failed creation. Request error: {viewError.Message}");
             }
 
-            Console.WriteLine($"\nFailed to save worker. Request error: {e.Message}");
+            Console.WriteLine($"\nFailed to add worker. Request error: {e.Message}");
         }
     }
 
@@ -145,18 +145,18 @@ internal class WorkerController
 
             if (editResult)
             {
-                Console.WriteLine("\nSuccessfully edited worker");
+                Console.WriteLine("\nSuccessfully edited worker!");
             }
             else
             {
-                Console.WriteLine("\nFailed to edit worker");
+                Console.WriteLine("\nFailed to edit worker.");
             }
         }
         catch (HttpRequestException e)
         {
             Console.Clear();
             await ViewWorkers("Edit Worker");
-            Console.WriteLine($"\nFailed to update worker. Request error: {e.Message}");
+            Console.WriteLine($"\nFailed to edit worker. Request error: {e.Message}");
         }
     }
 
@@ -207,7 +207,7 @@ internal class WorkerController
 
                 if (deleteResult)
                 {
-                    Console.WriteLine("\nSuccessfully deleted worker");
+                    Console.WriteLine("\nSuccessfully deleted worker!");
                 }
                 else
                 {

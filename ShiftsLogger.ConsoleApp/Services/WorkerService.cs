@@ -13,7 +13,7 @@ public class WorkerService
     {
         _httpClient = httpClient;
         _httpClient.BaseAddress = new Uri("https://localhost:7150/api/");
-        
+
     }
 
     public async Task<List<WorkerDto>> GetWorkersAsync()

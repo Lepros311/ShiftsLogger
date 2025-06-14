@@ -102,11 +102,11 @@ internal class ShiftController
 
             if (insertResult)
             {
-                Console.WriteLine("\nSuccessfully saved shift");
+                Console.WriteLine("\nSuccessfully added shift!");
             }
             else
             {
-                Console.WriteLine("\nFailed to save shift.");
+                Console.WriteLine("\nFailed to add shift.");
             }
         }
         catch (HttpRequestException e)
@@ -121,7 +121,7 @@ internal class ShiftController
                 Console.WriteLine($"\nFailed to refresh shift list after failed creation. Request error: {viewError.Message}");
             }
 
-            Console.WriteLine($"\nFailed to save shift. Request error: {e.Message}");
+            Console.WriteLine($"\nFailed to add shift. Request error: {e.Message}");
         }
     }
 
@@ -190,7 +190,7 @@ internal class ShiftController
 
             if (editResult)
             {
-                Console.WriteLine("\nSuccessfully edited shift");
+                Console.WriteLine("\nSuccessfully edited shift!");
             }
             else
             {
@@ -201,7 +201,7 @@ internal class ShiftController
         {
             Console.Clear();
             await ViewShifts("Edit Shift");
-            Console.WriteLine($"\nFailed to update shift. Request error: {e.Message}");
+            Console.WriteLine($"\nFailed to edit shift. Request error: {e.Message}");
         }
     }
 
@@ -250,7 +250,7 @@ internal class ShiftController
 
                 if (deleteResult)
                 {
-                    Console.WriteLine("\nSuccessfully deleted shift");
+                    Console.WriteLine("\nSuccessfully deleted shift!");
                 }
                 else
                 {

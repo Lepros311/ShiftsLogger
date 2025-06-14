@@ -1,5 +1,5 @@
-﻿using Spectre.Console;
-using ShiftsLogger.ConsoleApp.Models;
+﻿using ShiftsLogger.ConsoleApp.Models;
+using Spectre.Console;
 
 namespace ShiftsLogger.ConsoleApp.Views;
 

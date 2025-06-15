@@ -1,6 +1,4 @@
-﻿using ShiftsLogger.API.Models;
-
-namespace ShiftsLogger.API.Models;
+﻿namespace ShiftsLogger.API.Models;
 
 public class WorkerDto
 {

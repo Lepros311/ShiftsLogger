@@ -1,6 +1,4 @@
-﻿using ShiftsLogger.API.Models;
-
-namespace ShiftsLogger.API.Models;
+﻿namespace ShiftsLogger.API.Models;
 
 public class ShiftDto
 {
@@ -12,6 +10,6 @@ public class ShiftDto
     public TimeOnly Duration { get; set; }
 
     public int WorkerId { get; set; }
-    
+
     public Worker Worker { get; set; }
 }

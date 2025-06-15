@@ -1,5 +1,4 @@
 ﻿using ShiftsLogger.ConsoleApp.Controllers;
-using ShiftsLogger.ConsoleApp.Models;
 using ShiftsLogger.ConsoleApp.Services;
 using Spectre.Console;
 

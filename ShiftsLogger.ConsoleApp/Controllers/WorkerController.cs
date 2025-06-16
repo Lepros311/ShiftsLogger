@@ -176,7 +176,6 @@ internal class WorkerController
             Console.WriteLine($"\nFailed to retrieve workers. Request error: {e.Message}");
             return; // Exit early if workers can't be retrieved
         }
-        var deleteWorkersDict = deleteWorkers.ToDictionary(x => $"{x.FirstName} {x.LastName}, {x.Title}");
 
         var rule = new Rule("[green]Delete Worker[/]");
         rule.Justification = Justify.Left;

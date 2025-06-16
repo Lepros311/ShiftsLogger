@@ -81,7 +81,6 @@ internal class ShiftController
             Console.WriteLine($"\nFailed to retrieve workers. Request error: {e.Message}");
             return; // Exit early if workers can't be retrieved
         }
-        var shiftWorkersDict = shiftWorkers.ToDictionary(x => $"{x.FirstName} {x.LastName}, {x.Title}");
 
         var newShiftWorker = userInterface.SelectWorker("\nChoose Worker for Shift:", shiftWorkers);
 

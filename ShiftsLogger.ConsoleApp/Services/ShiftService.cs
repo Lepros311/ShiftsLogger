@@ -72,9 +72,6 @@ public class ShiftService
 
     public async Task<bool> InsertShiftAsync(ShiftDto newShift)
     {
-        var json = JsonSerializer.Serialize(newShift);
-        var content = new StringContent(json, System.Text.Encoding.UTF8, "application/json");
-
         try
         {
             var response = await _httpClient.PostAsJsonAsync("/api/Shifts", newShift);

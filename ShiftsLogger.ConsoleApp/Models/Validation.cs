@@ -7,7 +7,6 @@ public class Validation
     public static DateOnly? ValidateDate(string dateInput)
     {
         string format = "MM/dd/yyyy";
-        CultureInfo provider = CultureInfo.InvariantCulture;
         if (!DateOnly.TryParseExact(dateInput, format, out DateOnly date))
         {
             return null;

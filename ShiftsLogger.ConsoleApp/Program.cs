@@ -1,6 +1,6 @@
 ﻿using ShiftsLogger.ConsoleApp.Views;
 
-class Program
+class ConsoleAppProgram
 {
     static async Task Main()
     {

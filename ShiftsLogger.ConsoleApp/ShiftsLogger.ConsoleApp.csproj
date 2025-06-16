@@ -5,6 +5,7 @@
     <TargetFramework>net9.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+	<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
   </PropertyGroup>
 
   <ItemGroup>
@@ -13,6 +14,9 @@
 
   <ItemGroup>
 	<ProjectReference Include="..\ShiftsLogger.Api\ShiftsLogger.Api.csproj" />
+<!--
+	<ProjectReference Include="..\ShiftsLogger\ShiftsLogger.csproj" />
+-->
   </ItemGroup>
 
 </Project>

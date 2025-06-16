@@ -1,6 +1,4 @@
-﻿using System.Globalization;
-
-namespace ShiftsLogger.ConsoleApp.Models;
+﻿namespace ShiftsLogger.ConsoleApp.Models;
 
 public class Validation
 {

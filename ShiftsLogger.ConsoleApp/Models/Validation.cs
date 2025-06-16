@@ -19,7 +19,6 @@ public class Validation
 
     public static TimeOnly? ValidateTime(string timeInput)
     {
-        CultureInfo provider = CultureInfo.InvariantCulture;
         if (!TimeOnly.TryParseExact(timeInput, "h:mm tt", out TimeOnly time))
         {
             return null;

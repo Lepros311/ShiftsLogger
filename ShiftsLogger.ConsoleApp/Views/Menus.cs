@@ -96,7 +96,6 @@ internal class Menus
     internal async Task PrintSelectionShiftsMenu()
     {
         var isShiftsMenuRunning = true;
-        var userInterface = new UserInterface(new ShiftService(new HttpClient()), new WorkerService(new HttpClient()));
         while (isShiftsMenuRunning)
         {
             Console.Clear();
